@@ -59,3 +59,25 @@ To run your Python code:
 ```sh
 uv run main.py
 ```
+## Ollama
+
+Download Ollama
+Powershell
+irm https://ollama.com/install.ps1 | iex
+
+Run Ollama
+ollama
+
+## OpenWeb UI
+Guide
+https://docs.openwebui.com/getting-started/quick-start/
+
+Update 
+OpenWebUI
+uv add open-webui
+
+Run in seperate Powershell instance, not tied to the Terminal in VS-Code. Ollama should run before starting this to have access to the Port with the Local AI Models
+$env:DATA_DIR="C:\open-webui\data"
+$env:DATA_DIR="C:\open-webui\data"; uvx --python 3.12 open-webui@latest serve
+
+
