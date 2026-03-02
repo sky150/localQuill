@@ -92,3 +92,5 @@ sequenceDiagram
     PromptAPI->>+LocalLLM: Context and Prompt
     LocalLLM->>+UI: Response
 ```
+
+![Mermaid Sequence Diagram](/.attachements/SequenceDiagram.png "Mermaid SequenceDiagram")
