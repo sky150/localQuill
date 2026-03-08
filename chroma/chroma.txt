@@ -1,1 +1,0 @@
-Generate chroma db to this folder
