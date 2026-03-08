@@ -94,3 +94,6 @@ sequenceDiagram
 ```
 
 ![Mermaid Sequence Diagram](/.attachements/SequenceDiagram.png "Mermaid SequenceDiagram")
+
+
+Llama Index - LangChain. If we need it. (LlamaaIndex easier to start)
