@@ -97,3 +97,24 @@ sequenceDiagram
 
 
 Llama Index - LangChain. If we need it. (LlamaaIndex easier to start)
+
+# Run Project
+
+## Generate RAG DB (Chroma)
+```sh
+uv sync
+uv run -m src.vector_db.generate_chroma
+```
+
+## Rest RAG DB 
+*Not yet functional*
+```sh
+uv sync
+uv run -m src.vector_db.generate_chroma --reset
+```
+
+## Run Main
+```sh
+uv sync
+uv run -m main.py
+```
