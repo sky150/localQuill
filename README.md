@@ -118,3 +118,13 @@ uv run -m src.vector_db.generate_chroma --reset
 uv sync
 uv run -m main.py
 ```
+
+## Run frontend (Chainlit)
+```sh
+PYTHONPATH=. uv run chainlit run src/frontend/app.py
+```
+
+To test the rag
+```sh
+PYTHONPATH=. uv run python test/test_rag.py
+```
