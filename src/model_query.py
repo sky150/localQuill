@@ -4,6 +4,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from src.embeddings import get_embedding_function_local
 from dotenv import load_dotenv
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 CHROMA_PATH = os.getenv("CHROMA_PATH", "./chroma")
 
@@ -68,12 +71,10 @@ def query_rag(user_text: str) -> str:
 
     results = db.similarity_search_with_score(user_text, k=5)
 
-    print("++ Debugging similarity_search_with_score")
+    logger.info("++ Debugging similarity_search_with_score ++")
     for doc, score in results:
-        print(f"Score: {score:.3f}")
-        print(f"Source: {doc.metadata.get('source', '?')}")
-        print(f"Content: {doc.page_content[:150]}...")
-        print()
+        logger.info(f"Score: {score:.3f} | Source: {doc.metadata.get('source', '?')}")
+        logger.debug(f"Content: {doc.page_content[:150]}")
 
     if not results:
         return "No relevant writing guidelines found."
@@ -88,14 +89,6 @@ def query_rag(user_text: str) -> str:
     )  # teest different models qwen
     response = model.invoke(prompt)
     return response
-
-    # for debugging
-    # print("Retrieved chunks:")
-    # for doc, score in results:
-    #     print(f"  Score: {score:.3f} | Source: {doc.metadata.get('source','?')}")
-    #
-    # return f"Prompt built successfully with {len(results)} chunks."
-
 
 if __name__ == "__main__":
     #

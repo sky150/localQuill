@@ -1,5 +1,8 @@
 import chainlit as cl
 from src.model_query import query_rag
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 @cl.on_message
