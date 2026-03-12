@@ -113,8 +113,33 @@ uv sync
 uv run -m src.vector_db.generate_chroma --reset
 ```
 
+## Add Collections
+
+### Mac / Linux
+```sh
+COLLECTION_NAME=essay DATA_PATH=./data/styles/essay uv run -m src.vector_db.generate_chroma
+
+COLLECTION_NAME=fantasy DATA_PATH=./data/styles/fantasy uv run -m src.vector_db.generate_chroma
+```
+### Windows
+```sh
+$env:COLLECTION_NAME="essay"; $env:DATA_PATH="./data/styles/essay"; uv run -m src.vector_db.generate_chroma
+$env:COLLECTION_NAME="fantasy"; $env:DATA_PATH="./data/styles/fantasy"; uv run -m src.vector_db.generate_chroma
+```
+
+
 ## Run Main
 ```sh
 uv sync
 uv run -m main.py
+```
+
+## Run frontend (Chainlit)
+```sh
+PYTHONPATH=. uv run chainlit run src/frontend/app.py
+```
+
+To test the rag
+```sh
+PYTHONPATH=. uv run python test/test_rag.py
 ```
