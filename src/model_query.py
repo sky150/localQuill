@@ -70,7 +70,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     collection_name = style if style in STYLE_PROMPTS else "essay"
     style_context = STYLE_PROMPTS.get(collection_name, STYLE_PROMPTS["essay"])
 
-    # issue: where chrome path
+    # issue: where chroma path
     try:
         db = get_db(CHROMA_PATH, collection_name)
     except (FileNotFoundError, ValueError) as e:
@@ -95,6 +95,6 @@ def query_rag(user_text: str, style: str = "essay") -> str:
 
     model = OllamaLLM(
         model=os.getenv("LOCAL_MODEL", "llama3:8b")
-    )  # teest different models qwen
+    )  # test different models qwen
     response = model.invoke(prompt)
     return response
