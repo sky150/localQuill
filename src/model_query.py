@@ -5,6 +5,7 @@ from src.embeddings import get_embedding_function_local
 from dotenv import load_dotenv
 import os
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,8 @@ STYLE_PROMPTS = {
 PROMPT_TEMPLATE = """
 You are an expert writing coach. Use the following writing guidelines 
 to give specific, actionable feedback on the user's text.
+
+Language: en-GB
 
 Writing Style Context:
 {style_context}
@@ -58,6 +61,8 @@ def get_db(chroma_path: str, collection_name: str):
 
 def query_rag(user_text: str, style: str = "essay") -> str:
 
+    logger.warning("1. Received user query for RAG feedback.")
+
     if not user_text:
         return "Please provide some text to get feedback on."
 
@@ -67,6 +72,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
             "Please split it into smaller sections."
         )
 
+    logger.warning("1. Input validation passed. Proceeding with RAG process.")
     collection_name = style if style in STYLE_PROMPTS else "essay"
     style_context = STYLE_PROMPTS.get(collection_name, STYLE_PROMPTS["essay"])
 
@@ -76,8 +82,11 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     except (FileNotFoundError, ValueError) as e:
         return f"Database error: {e}"
 
-    results = db.similarity_search_with_score(user_text, k=5)
+    logger.warning("3. RAG process started.")
+    results = db.similarity_search_with_score(user_text, k=3)
+                                                # More than 3 is extremely heavy for the mini model
 
+    logger.warning("4. Received similarity search results.")
     logger.info(f"++ Debugging similarity search | Collection '{collection_name}' ++")
     for doc, score in results:
         logger.info(f"Score: {score:.3f} | Source: {doc.metadata.get('source', '?')}")
@@ -86,15 +95,35 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     if not results:
         return "No relevant writing guidelines found."
 
-    context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
 
+    context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
+    logger.warning("5. Preparing prompt for LLM.")
+    
+    
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(
         style_context=style_context, context=context_text, question=user_text
     )
+    
+    logger.warning("6. Invoking LLM with prepared prompt.")
 
+    logger.info(f"Using model: {os.getenv('LOCAL_MODEL')}")
+    
+    # Well this doesn't work for Windows. 
     model = OllamaLLM(
-        model=os.getenv("LOCAL_MODEL", "llama3:8b")
+        model=os.getenv("LOCAL_MODEL", "qwen3.5:4b"),
+        base_url="http://127.0.0.1:11434",
+        temperature=0.3,
     )  # test different models qwen
-    response = model.invoke(prompt)
+    
+    start = time.time()
+    response = ""
+    try:
+        response = model.invoke(prompt)
+    except Exception as e:
+        logger.error(f"LLM invocation failed: {e}")
+        raise
+    end = time.time()
+    logger.info(f"7. LLM response time: {end - start:.2f} seconds")
+    logger.info(f"LLM response: {response}")
     return response
