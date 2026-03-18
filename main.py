@@ -4,7 +4,7 @@ import time
 def main():
     start = time.time()
     model = OllamaLLM(
-        model="qwen3.5:4b",
+        model="qwen2.5:7b",
         base_url="http://127.0.0.1:11434",
         num_predict=300,
         temperature=0.3,

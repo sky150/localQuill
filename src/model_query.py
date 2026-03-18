@@ -1,7 +1,7 @@
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
-from src.embeddings import get_embedding_function_local
+import src.embedding.embeddings as embeddings
 from dotenv import load_dotenv
 import os
 import logging
@@ -43,7 +43,7 @@ def get_db(chroma_path: str, collection_name: str):
     if not os.path.exists(chroma_path):
         raise FileNotFoundError(f"ChromaDB not found at '{chroma_path}'. ")
 
-    embedding_function = get_embedding_function_local()
+    embedding_function = embeddings.get_embedding_function(logger)
     db = Chroma(
         persist_directory=chroma_path,
         embedding_function=embedding_function,
@@ -59,20 +59,21 @@ def get_db(chroma_path: str, collection_name: str):
     return db
 
 
+
 def query_rag(user_text: str, style: str = "essay") -> str:
 
-    logger.warning("1. Received user query for RAG feedback.")
+    logger.info("1. Received user query for RAG feedback.")
 
     if not user_text:
         return "Please provide some text to get feedback on."
 
-    if len(user_text) > 5500:
+    if len(user_text) > 50000:
         return (
             "Text is too long! It's over 5000 characters."
             "Please split it into smaller sections."
         )
 
-    logger.warning("1. Input validation passed. Proceeding with RAG process.")
+    logger.info("2. Input validation passed. Proceeding with RAG process.")
     collection_name = style if style in STYLE_PROMPTS else "essay"
     style_context = STYLE_PROMPTS.get(collection_name, STYLE_PROMPTS["essay"])
 
@@ -82,11 +83,15 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     except (FileNotFoundError, ValueError) as e:
         return f"Database error: {e}"
 
-    logger.warning("3. RAG process started.")
+    logger.info("3. RAG similarity search started.")
+    # If needed. Maybe doing similarity seraches for a combination of chunks could do better.
     results = db.similarity_search_with_score(user_text, k=3)
                                                 # More than 3 is extremely heavy for the mini model
+                                                # Effectively no character limit with sentence transformer embedding model. 
+                                                # Nomic-embed-text has a limit of 1000 words ~5000 characters
 
-    logger.warning("4. Received similarity search results.")
+
+    logger.info("4. Received similarity search results.")
     logger.info(f"++ Debugging similarity search | Collection '{collection_name}' ++")
     for doc, score in results:
         logger.info(f"Score: {score:.3f} | Source: {doc.metadata.get('source', '?')}")
@@ -97,7 +102,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
 
 
     context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
-    logger.warning("5. Preparing prompt for LLM.")
+    logger.info("5. Preparing prompt for LLM.")
     
     
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
@@ -105,7 +110,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
         style_context=style_context, context=context_text, question=user_text
     )
     
-    logger.warning("6. Invoking LLM with prepared prompt.")
+    logger.info("6. Invoking LLM with prepared prompt.")
 
     logger.info(f"Using model: {os.getenv('LOCAL_MODEL')}")
     
@@ -125,5 +130,5 @@ def query_rag(user_text: str, style: str = "essay") -> str:
         raise
     end = time.time()
     logger.info(f"7. LLM response time: {end - start:.2f} seconds")
-    logger.info(f"LLM response: {response}")
+    # logger.warning(f"LLM response: {response}")
     return response

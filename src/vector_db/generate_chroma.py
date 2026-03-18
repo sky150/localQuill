@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
-from src.embeddings import get_embedding_function_local
+from src.embedding.embeddings import get_embedding_function
 from src.vector_db.load_pdf import load_documents
 from src.vector_db.create_chunks import split_documents, calculate_chunk_ids
 from src.vector_db.reset_db import reset_db
@@ -22,7 +22,7 @@ def add_to_chroma(
     abs_chroma_path = os.path.abspath(chroma_path)
     db = Chroma.from_documents(
         documents=chunks,
-        embedding=get_embedding_function_local(),
+        embedding=get_embedding_function(), 
         persist_directory=abs_chroma_path,
         collection_name=collection_name,
     )
