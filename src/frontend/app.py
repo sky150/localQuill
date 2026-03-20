@@ -1,6 +1,7 @@
 import chainlit as cl
 from src.model_query import query_rag
 import logging
+import asyncio
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -33,5 +34,5 @@ async def on_start():
 @cl.on_message
 async def main(message: cl.Message):
     style = cl.user_session.get("style", "essay")
-    response = query_rag(message.content, style=style)
+    response = await asyncio.to_thread(query_rag, message.content, style=style)
     await cl.Message(content=response).send()

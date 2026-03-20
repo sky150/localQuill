@@ -17,22 +17,28 @@ STYLE_PROMPTS = {
     "formal": "Apply formal writing standards: professional tone, precise language, no contractions.",
 }
 
+# Prompt optimierung
+SUB_PROMPTS = {
+    "grammar": "Focus only on grammar errors",
+    "style": "Focus only on writing style",
+    "clarity": "Focus only on clarity",
+}
+
 PROMPT_TEMPLATE = """
-You are an expert writing coach. Use the following writing guidelines 
+You are an expert writing coach specialising in {style_context}. Use the following writing guidelines 
 to give specific, actionable feedback on the user's text.
 
 Language: en-GB
 
-Writing Style Context:
-{style_context}
-
 Writing Guidelines (from style guides):
 {context}
+
+Your Task:
+{focus_instruction}
 
 User's Text:
 {question}
 
-Provide feedback on: grammar, style, tone, and clarity.
 Be specific: reference parts of the text directly.
 """
 
@@ -57,7 +63,6 @@ def get_db(chroma_path: str, collection_name: str):
         )
 
     return db
-
 
 
 def query_rag(user_text: str, style: str = "essay") -> str:
@@ -85,11 +90,10 @@ def query_rag(user_text: str, style: str = "essay") -> str:
 
     logger.info("3. RAG similarity search started.")
     # If needed. Maybe doing similarity seraches for a combination of chunks could do better.
-    results = db.similarity_search_with_score(user_text, k=3)
-                                                # More than 3 is extremely heavy for the mini model
-                                                # Effectively no character limit with sentence transformer embedding model. 
-                                                # Nomic-embed-text has a limit of 1000 words ~5000 characters
-
+    results = db.similarity_search_with_score(user_text, k=1)
+    # More than 3 is extremely heavy for the mini model
+    # Effectively no character limit with sentence transformer embedding model.
+    # Nomic-embed-text has a limit of 1000 words ~5000 characters
 
     logger.info("4. Received similarity search results.")
     logger.info(f"++ Debugging similarity search | Collection '{collection_name}' ++")
@@ -100,35 +104,52 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     if not results:
         return "No relevant writing guidelines found."
 
-
     context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
-    logger.info("5. Preparing prompt for LLM.")
-    
-    
-    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    prompt = prompt_template.format(
-        style_context=style_context, context=context_text, question=user_text
-    )
-    
+    # logger.info("5. Preparing prompt for LLM.")
+    #
+    # prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+    # prompt = prompt_template.format(
+    #     style_context=style_context, context=context_text, question=user_text
+    # )
+
     logger.info("6. Invoking LLM with prepared prompt.")
 
     logger.info(f"Using model: {os.getenv('LOCAL_MODEL')}")
-    
-    # Well this doesn't work for Windows. 
+
+    # Well this doesn't work for Windows.
     model = OllamaLLM(
         model=os.getenv("LOCAL_MODEL", "qwen3.5:4b"),
         base_url="http://127.0.0.1:11434",
         temperature=0.3,
     )  # test different models qwen
-    
+
     start = time.time()
-    response = ""
-    try:
-        response = model.invoke(prompt)
-    except Exception as e:
-        logger.error(f"LLM invocation failed: {e}")
-        raise
+
+    feedback_sections = {}
+    for section, focus in SUB_PROMPTS.items():
+        prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE).format(
+            style_context=style_context,
+            focus_instruction=focus,
+            context=context_text,
+            question=user_text,
+        )
+        logger.info(f"7. Running sub-prompt: {section}")
+
+        try:
+            feedback_sections[section] = model.invoke(prompt)
+        except Exception as e:
+            logger.error(f"LLM invocation failed: {e}")
+            raise
+
     end = time.time()
-    logger.info(f"7. LLM response time: {end - start:.2f} seconds")
-    # logger.warning(f"LLM response: {response}")
-    return response
+    logger.info(f"8. LLM response time: {end - start:.2f} seconds")
+    # logger.warning(f"LLM response: {format_feedback(feedback_sections)}")
+    return format_feedback(feedback_sections)
+
+
+def format_feedback(sections: dict) -> str:
+    return (
+        f"### Grammar\n{sections['grammar']}\n\n"
+        f"### Style\n{sections['style']}\n\n"
+        f"### Clarity\n{sections['clarity']}"
+    )
