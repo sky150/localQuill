@@ -44,7 +44,6 @@ Be specific: reference parts of the text directly.
 
 CHROMA_PATH = os.getenv("CHROMA_PATH", "./chroma")
 
-
 def get_db(chroma_path: str, collection_name: str):
     if not os.path.exists(chroma_path):
         raise FileNotFoundError(f"ChromaDB not found at '{chroma_path}'. ")
@@ -89,8 +88,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
         return f"Database error: {e}"
 
     logger.info("3. RAG similarity search started.")
-    # If needed. Maybe doing similarity seraches for a combination of chunks could do better.
-    results = db.similarity_search_with_score(user_text, k=1)
+    results = db.similarity_search_with_score(user_text[:10000], k=3)
     # More than 3 is extremely heavy for the mini model
     # Effectively no character limit with sentence transformer embedding model.
     # Nomic-embed-text has a limit of 1000 words ~5000 characters
@@ -125,31 +123,61 @@ def query_rag(user_text: str, style: str = "essay") -> str:
 
     start = time.time()
 
-    feedback_sections = {}
-    for section, focus in SUB_PROMPTS.items():
-        prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE).format(
-            style_context=style_context,
-            focus_instruction=focus,
-            context=context_text,
-            question=user_text,
-        )
-        logger.info(f"7. Running sub-prompt: {section}")
 
-        try:
-            feedback_sections[section] = model.invoke(prompt)
-        except Exception as e:
-            logger.error(f"LLM invocation failed: {e}")
-            raise
+
+    # Split at 1000 words to Improve quality.
+    user_text_split = int(os.getenv("USER_TEXT_SPLIT_WORD", "2000"))
+    user_text_chunks = embeddings.chunk_user_prompt(user_text, chunk_size=user_text_split, chunk_overlap=int(user_text_split*0.2))
+
+    # Make a while series of LLM calls. For each chunk and subcategory. 
+    all_feedback = {
+        "grammar": [],
+        "style": [],
+        "clarity": []
+    }
+
+    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+    for i, user_text_chunk in enumerate(user_text_chunks):
+        logger.info(f"6.{i+1} Invoking LLM with chunk {i+1}/{len(user_text_chunks)}. Chunklength: {len(user_text_chunk.split())} words.")
+
+        for section, focus in SUB_PROMPTS.items():
+            prompt = prompt_template.format(
+                style_context=style_context,
+                focus_instruction=focus,
+                context=context_text,
+                question=user_text_chunk,
+            )
+
+            logger.info(f"8.{i+1} Running sub-prompt: {section}")
+
+            try:
+                response = model.invoke(prompt)
+                all_feedback[section].append(response)
+            except Exception as e:
+                logger.error(f"LLM invocation failed: {e}")
+                raise
+
 
     end = time.time()
-    logger.info(f"8. LLM response time: {end - start:.2f} seconds")
+    logger.info(f"9. LLM response time: {end - start:.2f} seconds")
     # logger.warning(f"LLM response: {format_feedback(feedback_sections)}")
-    return format_feedback(feedback_sections)
+    return format_feedback(all_feedback)
+    
 
 
 def format_feedback(sections: dict) -> str:
+
+    formatted_sections = {}
+    for section, responses in sections.items():
+        joined = "\n\n".join(
+            f"Chunk {i+1}:\n{resp}"
+            for i, resp in enumerate(responses)
+        )
+
+        formatted_sections[section] = joined
+
     return (
-        f"### Grammar\n{sections['grammar']}\n\n"
-        f"### Style\n{sections['style']}\n\n"
-        f"### Clarity\n{sections['clarity']}"
+        f"### Grammar\n{formatted_sections['grammar']}\n\n"
+        f"### Style\n{formatted_sections['style']}\n\n"
+        f"### Clarity\n{formatted_sections['clarity']}"
     )
