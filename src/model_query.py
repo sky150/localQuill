@@ -8,6 +8,7 @@ import logging
 import time
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 load_dotenv()
 
@@ -63,8 +64,19 @@ def get_db(chroma_path: str, collection_name: str):
 
     return db
 
+def text_normalization(user_text: str):
+    return user_text
+#     """Text data cleaning to improve embedding quality and llm prompt quality."""
+#     normalized_text = tprep.normalize_hyphenated_words(user_text)
+#     # Maybe more needed. Hyphens for example
+#     return normalized_text
 
 def query_rag(user_text: str, style: str = "essay") -> str:
+    
+    user_text = text_normalization(user_text)
+    #Additional Logging to check formating of text chunks. In case linebraks or hyphons aren't properly formated
+    logger.debug(f"0. User text chunks {user_text_chunks[0:500]}")
+
 
     logger.info("1. Received user query for RAG feedback.")
 
@@ -124,11 +136,13 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     start = time.time()
 
 
-
     # Split at 1000 words to Improve quality.
     user_text_split = int(os.getenv("USER_TEXT_SPLIT_WORD", "2000"))
     user_text_chunks = embeddings.chunk_user_prompt(user_text, chunk_size=user_text_split, chunk_overlap=int(user_text_split*0.2))
+    
 
+    
+    
     # Make a while series of LLM calls. For each chunk and subcategory. 
     all_feedback = {
         "grammar": [],
