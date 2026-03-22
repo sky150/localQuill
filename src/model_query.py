@@ -4,6 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 import src.embedding.embeddings as embeddings
 from dotenv import load_dotenv
 import os
+import re
 import logging
 import time
 
@@ -64,21 +65,34 @@ def get_db(chroma_path: str, collection_name: str):
 
     return db
 
+def text_normalization2(user_text: str):
+    # Remove hyphenation at line breaks (e.g., "hyphen-\nated" -> "hyphenated")
+    normalized_text = re.sub(r"(?<=\w)-\n(?=\w)", "", user_text)
+    return normalized_text
+
 def text_normalization(user_text: str):
-    return user_text
-#     """Text data cleaning to improve embedding quality and llm prompt quality."""
-#     normalized_text = tprep.normalize_hyphenated_words(user_text)
-#     # Maybe more needed. Hyphens for example
-#     return normalized_text
+    """Normalize text by fixing hyphenated line breaks, normalizing line endings, and collapsing spaces with Regex."""
+    # Fix hyphenated line breaks
+    text = re.sub(r"(?<=\w)-\n(?=\w)", "", user_text)
+    # Replace single newlines with spaces
+    text = re.sub(r"(?<!\n)\n(?!\n)", " ", text)
+    # Normalize multiple paragraph breaks
+    text = re.sub(r"\n{2,}", "\n\n", text)
+    # Collapse multiple spaces
+    text = re.sub(r"[ ]{2,}", " ", text)
+
+    return text.strip()
+
+
 
 def query_rag(user_text: str, style: str = "essay") -> str:
     
     user_text = text_normalization(user_text)
     #Additional Logging to check formating of text chunks. In case linebraks or hyphons aren't properly formated
-    logger.debug(f"0. User text chunks {user_text_chunks[0:500]}")
+    logger.debug(f"0. Normalized user text {user_text[0:500]}")
 
 
-    logger.info("1. Received user query for RAG feedback.")
+    logger.debug("1. Received user query for RAG feedback.")
 
     if not user_text:
         return "Please provide some text to get feedback on."
@@ -89,7 +103,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
             "Please split it into smaller sections."
         )
 
-    logger.info("2. Input validation passed. Proceeding with RAG process.")
+    logger.debug("2. Input validation passed. Proceeding with RAG process.")
     collection_name = style if style in STYLE_PROMPTS else "essay"
     style_context = STYLE_PROMPTS.get(collection_name, STYLE_PROMPTS["essay"])
 
@@ -99,13 +113,13 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     except (FileNotFoundError, ValueError) as e:
         return f"Database error: {e}"
 
-    logger.info("3. RAG similarity search started.")
+    logger.debug("3. RAG similarity search started.")
     results = db.similarity_search_with_score(user_text[:10000], k=3)
     # More than 3 is extremely heavy for the mini model
     # Effectively no character limit with sentence transformer embedding model.
     # Nomic-embed-text has a limit of 1000 words ~5000 characters
 
-    logger.info("4. Received similarity search results.")
+    logger.debug("4. Received similarity search results.")
     logger.info(f"++ Debugging similarity search | Collection '{collection_name}' ++")
     for doc, score in results:
         logger.info(f"Score: {score:.3f} | Source: {doc.metadata.get('source', '?')}")
@@ -115,15 +129,8 @@ def query_rag(user_text: str, style: str = "essay") -> str:
         return "No relevant writing guidelines found."
 
     context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
-    # logger.info("5. Preparing prompt for LLM.")
-    #
-    # prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    # prompt = prompt_template.format(
-    #     style_context=style_context, context=context_text, question=user_text
-    # )
 
-    logger.info("6. Invoking LLM with prepared prompt.")
-
+    logger.debug("6. Invoking LLM with prepared prompt.")
     logger.info(f"Using model: {os.getenv('LOCAL_MODEL')}")
 
     # Well this doesn't work for Windows.
@@ -136,13 +143,11 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     start = time.time()
 
 
-    # Split at 1000 words to Improve quality.
-    user_text_split = int(os.getenv("USER_TEXT_SPLIT_WORD", "2000"))
+    # Split at 5000 characters to Improve quality.
+    user_text_split = int(os.getenv("USER_TEXT_SPLIT", "5000"))
     user_text_chunks = embeddings.chunk_user_prompt(user_text, chunk_size=user_text_split, chunk_overlap=int(user_text_split*0.2))
-    
+    logger.debug(f"0. User text chunks {user_text_chunks[0:500]}")
 
-    
-    
     # Make a while series of LLM calls. For each chunk and subcategory. 
     all_feedback = {
         "grammar": [],
@@ -152,7 +157,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
 
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     for i, user_text_chunk in enumerate(user_text_chunks):
-        logger.info(f"6.{i+1} Invoking LLM with chunk {i+1}/{len(user_text_chunks)}. Chunklength: {len(user_text_chunk.split())} words.")
+        logger.debug(f"6.{i+1} Invoking LLM with chunk {i+1}/{len(user_text_chunks)}. Chunklength: {len(user_text_chunk.split())} words.")
 
         for section, focus in SUB_PROMPTS.items():
             prompt = prompt_template.format(
@@ -162,7 +167,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
                 question=user_text_chunk,
             )
 
-            logger.info(f"8.{i+1} Running sub-prompt: {section}")
+            logger.debug(f"7.{i+1} Running sub-prompt: {section}")
 
             try:
                 response = model.invoke(prompt)
@@ -173,8 +178,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
 
 
     end = time.time()
-    logger.info(f"9. LLM response time: {end - start:.2f} seconds")
-    # logger.warning(f"LLM response: {format_feedback(feedback_sections)}")
+    logger.debug(f"8. LLM response time: {end - start:.2f} seconds")
     return format_feedback(all_feedback)
     
 

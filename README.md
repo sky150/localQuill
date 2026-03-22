@@ -86,14 +86,14 @@ Sequency Diagramm (MermaidLive):
 
 ```
 sequenceDiagram
-    UI->>+PromptAPI: Prompt
-    PromptAPI->>+Rag: Query for context
-    Rag->>+PromptAPI: Related Chunks
-    PromptAPI->>+LocalLLM: Context and Prompt
-    LocalLLM->>+UI: Response
+    Chainlit->>+Backend: User Text
+    Backend->>+ChromaDB: RAG Similarity Search
+    ChromaDB->>+Backend: Context Vectors
+    Backend->>+Mini-LLM: Context and Prompt
+    Mini-LLM->>+Chainlit: Response
 ```
 
-![Mermaid Sequence Diagram](/.attachements/SequenceDiagram.png "Mermaid SequenceDiagram")
+![Mermaid Sequence Diagram](/.attachements/ "Mermaid SequenceDiagram")
 
 
 

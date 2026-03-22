@@ -37,22 +37,7 @@ def chunk_user_prompt(text: str, chunk_size: int, chunk_overlap: int):
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
-        separators=["\n\n", "\n", " ", ""]
+        separators=["\n\n", "\n", ". " " ", ""]
     )
 
     return splitter.split_text(text)
-
-    # 
-    # words = text.split()
-    # chunks = []
-
-    # step = chunk_size - chunk_overlap
-
-    # for i in range(0, len(words), step):
-    #     chunk = words[i:i + chunk_size]
-
-    #     if len(chunk) < chunk_size * 0.5:
-    #         break # Mini chunk which would falsify similarity search
-    #     chunks.append(" ".join(chunk))
-
-    # return chunks
