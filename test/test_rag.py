@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.model_query import query_rag
-from src.embeddings import get_embedding_function_local
+from src.embedding.embeddings import get_embedding_function
 from langchain_chroma import Chroma
 from dotenv import load_dotenv
 
@@ -17,7 +17,7 @@ TEST_TEXT = """I am writing this comment to complain about the worrying increase
 
 def test_connection():
     db = Chroma(
-        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function_local()
+        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
     )
     count = db.get()
     print(f"Connected! Documents in DB: {len(count['ids'])}")
@@ -25,7 +25,7 @@ def test_connection():
 
 def test_retrieval():
     db = Chroma(
-        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function_local()
+        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
     )
     results = db.similarity_search_with_score(TEST_TEXT, k=3)
     for doc, score in results:

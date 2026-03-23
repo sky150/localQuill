@@ -12,4 +12,5 @@ dependencies = [
     "langchain-ollama>=1.0.1",
     "open-webui>=0.8.7",
     "pypdf>=6.7.0",
+    "sentence-transformers>=5.2.2",
 ]

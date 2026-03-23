@@ -96,6 +96,7 @@ sequenceDiagram
 ![Mermaid Sequence Diagram](/.attachements/SequenceDiagram.png "Mermaid SequenceDiagram")
 
 
+
 Llama Index - LangChain. If we need it. (LlamaaIndex easier to start)
 
 # Run Project
@@ -107,7 +108,7 @@ uv run -m src.vector_db.generate_chroma
 ```
 
 ## Rest RAG DB 
-*Not yet functional*
+Deletes all Chroma files. Allowing them to be regenerated with changed files and new chunk metaparameters.
 ```sh
 uv sync
 uv run -m src.vector_db.generate_chroma --reset
@@ -135,11 +136,24 @@ uv run -m main.py
 ```
 
 ## Run frontend (Chainlit)
+### Mac / Linux
 ```sh
 PYTHONPATH=. uv run chainlit run src/frontend/app.py
 ```
 
+### Windows
+```sh
+$env:PYTHONPATH="."; uv run chainlit run src/frontend/app.py
+```
+
+
 To test the rag
+### Mac / Linux
 ```sh
 PYTHONPATH=. uv run python test/test_rag.py
+```
+
+### Windows
+```sh
+$env:PYTHONPATH="."; uv run python test/test_rag.py
 ```
