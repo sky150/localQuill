@@ -47,6 +47,7 @@ Be specific: reference parts of the text directly.
 CHROMA_PATH = os.getenv("CHROMA_PATH", "./chroma")
 
 def get_db(chroma_path: str, collection_name: str):
+    """Initialize and return the ChromaDB collection for the specified style."""
     if not os.path.exists(chroma_path):
         raise FileNotFoundError(f"ChromaDB not found at '{chroma_path}'. ")
 
@@ -65,11 +66,6 @@ def get_db(chroma_path: str, collection_name: str):
 
     return db
 
-def text_normalization2(user_text: str):
-    # Remove hyphenation at line breaks (e.g., "hyphen-\nated" -> "hyphenated")
-    normalized_text = re.sub(r"(?<=\w)-\n(?=\w)", "", user_text)
-    return normalized_text
-
 def text_normalization(user_text: str):
     """Normalize text by fixing hyphenated line breaks, normalizing line endings, and collapsing spaces with Regex."""
     # Fix hyphenated line breaks
@@ -83,42 +79,13 @@ def text_normalization(user_text: str):
 
     return text.strip()
 
-
-def query_rag(user_text: str, style: str = "essay") -> str:
-    
-    user_text = text_normalization(user_text)
-    #Additional Logging to check formating of text chunks. In case linebraks or hyphons aren't properly formated
-    logger.debug(f"0. Normalized user text {user_text[0:500]}")
-
-
-    logger.debug("1. Received user query for RAG feedback.")
-
-    if not user_text:
-        return "Please provide some text to get feedback on."
-
-    if len(user_text) > 50000:
-        return (
-            "Text is too long! It's over 5000 characters."
-            "Please split it into smaller sections."
-        )
-
-    logger.debug("2. Input validation passed. Proceeding with RAG process.")
-    collection_name = style if style in STYLE_PROMPTS else "essay"
-    style_context = STYLE_PROMPTS.get(collection_name, STYLE_PROMPTS["essay"])
-
-    # issue: where chroma path
-    try:
-        db = get_db(CHROMA_PATH, collection_name)
-    except (FileNotFoundError, ValueError) as e:
-        return f"Database error: {e}"
-
-    logger.debug("3. RAG similarity search started.")
-    results = db.similarity_search_with_score(user_text[:10000], k=3)
+def similarity_search(db, user_text, collection_name: str, top_k=5):
+    """Perform a similarity search on the ChromaDB collection and return the top_k results."""
+    results = db.similarity_search_with_score(user_text[:10000], k=top_k)
     # More than 3 is extremely heavy for the mini model
     # Effectively no character limit with sentence transformer embedding model.
     # Nomic-embed-text has a limit of 1000 words ~5000 characters
 
-    logger.debug("4. Received similarity search results.")
     logger.info(f"++ Debugging similarity search | Collection '{collection_name}' ++")
     for doc, score in results:
         logger.info(f"Score: {score:.3f} | Source: {doc.metadata.get('source', '?')}")
@@ -126,34 +93,10 @@ def query_rag(user_text: str, style: str = "essay") -> str:
 
     if not results:
         return "No relevant writing guidelines found."
+    return results
 
-    context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
-
-    logger.debug("6. Invoking LLM with prepared prompt.")
-    logger.info(f"Using model: {os.getenv('LOCAL_MODEL')}")
-
-    # Well this doesn't work for Windows.
-    model = OllamaLLM(
-        model=os.getenv("LOCAL_MODEL", "qwen3.5:4b"),
-        base_url="http://127.0.0.1:11434",
-        temperature=0.3,
-    )  # test different models qwen
-
-    start = time.time()
-
-
-    # Split at 5000 characters to Improve quality.
-    user_text_split = int(os.getenv("USER_TEXT_SPLIT", "5000"))
-    user_text_chunks = embeddings.chunk_user_prompt(user_text, chunk_size=user_text_split, chunk_overlap=int(user_text_split*0.2))
-    logger.debug(f"0. User text chunks {user_text_chunks[0:500]}")
-
-    # Make a while series of LLM calls. For each chunk and subcategory. 
-    all_feedback = {
-        "grammar": [],
-        "style": [],
-        "clarity": []
-    }
-
+def llm_call(user_text_chunks, style_context, context_text, model, all_feedback):
+    """Make LLM calls for each chunk of user text and collect feedback for grammar, style, and clarity."""
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     for i, user_text_chunk in enumerate(user_text_chunks):
         logger.debug(f"6.{i+1} Invoking LLM with chunk {i+1}/{len(user_text_chunks)}. Chunklength: {len(user_text_chunk.split())} words.")
@@ -175,15 +118,10 @@ def query_rag(user_text: str, style: str = "essay") -> str:
                 logger.error(f"LLM invocation failed: {e}")
                 raise
 
-
-    end = time.time()
-    logger.debug(f"8. LLM response time: {end - start:.2f} seconds")
-    return format_feedback(all_feedback)
-    
-
+    return all_feedback
 
 def format_feedback(sections: dict) -> str:
-
+    """Format the collected feedback into a structured string output."""
     formatted_sections = {}
     for section, responses in sections.items():
         joined = "\n\n".join(
@@ -198,3 +136,61 @@ def format_feedback(sections: dict) -> str:
         f"### Style\n{formatted_sections['style']}\n\n"
         f"### Clarity\n{formatted_sections['clarity']}"
     )
+
+
+
+def query_rag(user_text: str, style: str = "essay") -> str:
+    """Main function to handle the RAG process for writing feedback."""
+
+    user_text = text_normalization(user_text)
+    #Additional Logging to check formating of text chunks. In case linebraks or hyphons aren't properly formated
+    logger.debug(f"1. Normalized user text {user_text[0:200]}")
+
+    if not user_text:
+        return "Please provide some text to get feedback on."
+
+    if len(user_text) > 50000:
+        return (
+            "Text is too long! It's over 50'000 characters. That's almost 10'000 words. Do you want to wait for an hour?"
+            "Please split it into smaller sections."
+        )
+
+    logger.debug("2. Input validation passed. Proceeding with RAG process.")
+    collection_name = style if style in STYLE_PROMPTS else "essay"
+    style_context = STYLE_PROMPTS.get(collection_name, STYLE_PROMPTS["essay"])
+    try:
+        db = get_db(CHROMA_PATH, collection_name)
+    except (FileNotFoundError, ValueError) as e:
+        return f"Database error: {e}"
+
+    start = time.time()
+    top_k = int(os.getenv("TOP_K", "3"))
+    results = similarity_search(db, user_text, collection_name=collection_name, top_k=top_k)
+    context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
+    end = time.time()
+    logger.debug(f"3. Completed similarity search for context for LLM in {end - start:.2f} seconds.")
+
+    model = OllamaLLM(
+        model=os.getenv("LOCAL_MODEL", "qwen3.5:4b"),
+        base_url="http://127.0.0.1:11434",
+        temperature=0.7,
+    )
+    logger.debug(f"4. LLM model initialized: {os.getenv('LOCAL_MODEL', 'qwen3.5:4b')}")
+
+    # Split at ~5000 characters to Improve quality.
+    
+    user_text_split = int(os.getenv("USER_TEXT_SPLIT", "5000"))
+    user_text_chunks = embeddings.chunk_user_prompt(user_text, chunk_size=user_text_split, chunk_overlap=int(user_text_split*0.2))
+    logger.debug(f"5. User text chunking completed.")
+
+    all_feedback = {
+        "grammar": [],
+        "style": [],
+        "clarity": []
+    }
+
+    start = time.time()
+    all_feedback = llm_call(user_text_chunks, style_context, context_text, model, all_feedback)
+    end = time.time()
+    logger.debug(f"8. LLM response time: {end - start:.2f} seconds")
+    return format_feedback(all_feedback)
