@@ -84,7 +84,6 @@ def text_normalization(user_text: str):
     return text.strip()
 
 
-
 def query_rag(user_text: str, style: str = "essay") -> str:
     
     user_text = text_normalization(user_text)
