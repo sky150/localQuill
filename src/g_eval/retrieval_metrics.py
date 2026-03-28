@@ -10,15 +10,25 @@ relevancy_metric = ContextualRelevancyMetric(
 )
 
 
-def evaluate_embedding_model(user_query, retrieved_chunks):
+def evaluate_retrieval(user_query, retrieved_chunks):
     test_case = LLMTestCase(
         input=user_query,
-        actual_output="N/A",  # dont need output of llm
+        actual_output="N/A",
         retrieval_context=retrieved_chunks,
     )
-
     relevancy_metric.measure(test_case)
+    return relevancy_metric.score, relevancy_metric.reason
 
-    print(f"Contextual Relevancy Score: {relevancy_metric.score}")
-    print(f"Reason: {relevancy_metric.reason}")
-    return relevancy_metric.score
+
+# def evaluate_embedding_model(user_query, retrieved_chunks):
+#     test_case = LLMTestCase(
+#         input=user_query,
+#         actual_output="N/A",  # dont need output of llm
+#         retrieval_context=retrieved_chunks,
+#     )
+#
+#     relevancy_metric.measure(test_case)
+#
+#     print(f"Contextual Relevancy Score: {relevancy_metric.score}")
+#     print(f"Reason: {relevancy_metric.reason}")
+#     return relevancy_metric.score
