@@ -1,9 +1,4 @@
 
-## ToDo:
-    # Split into 3 Steps. Grammer, Style and Clarity each get a score of 1-5.
-    # So we rate each individual LLM call seperately.
-    # Additionally we have a Faithfullnes Metric. This determines if the Collected Rag Contexts are Faithfull to the User Prompt. 
-
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase
 from deepeval.test_case import LLMTestCaseParams, LLMTestCase
@@ -11,6 +6,12 @@ from deepeval.models import OllamaModel
 # from dotenv import load_dotenv
 # load_dotenv()
 
+## ToDo:
+    # Split into 3 Steps. Grammer, Style and Clarity each get a score of 1-5.
+    # So we rate each individual LLM call seperately.
+    # Additionally we have a Faithfullnes Metric. This determines if the Collected Rag Contexts are Faithfull to the User Prompt. 
+
+# Evaluates the generation: How well the LLM gives Grammar, Style, and Clarity feedback
 ollama_model = OllamaModel(
     model="llama3.1:8b"
 )
