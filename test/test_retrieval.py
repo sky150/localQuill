@@ -64,3 +64,8 @@ def retrieval_evaluation():
     if valid_tests > 0:
         average_score = total_score / valid_tests
         print(f"\nFinal Average Relevancy Score for {eval_model}: {average_score:.2f}")
+
+
+if __name__ == "__main__":
+    load_dotenv()
+    retrieval_evaluation()
