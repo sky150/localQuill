@@ -139,7 +139,7 @@ def format_feedback(sections: dict) -> str:
 
 
 
-def query_rag(user_text: str, style: str = "essay") -> str:
+def query_rag(user_text: str, style: str = "essay", return_dict: bool = False) -> str:
     """Main function to handle the RAG process for writing feedback."""
 
     user_text = text_normalization(user_text)
@@ -173,7 +173,7 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     model = OllamaLLM(
         model=os.getenv("LOCAL_MODEL", "qwen3.5:4b"),
         base_url="http://127.0.0.1:11434",
-        temperature=0.7,
+        temperature=float(os.getenv("TEMPERATURE", "0.7"))
     )
     logger.debug(f"4. LLM model initialized: {os.getenv('LOCAL_MODEL', 'qwen3.5:4b')}")
 
@@ -193,4 +193,6 @@ def query_rag(user_text: str, style: str = "essay") -> str:
     all_feedback = llm_call(user_text_chunks, style_context, context_text, model, all_feedback)
     end = time.time()
     logger.debug(f"8. LLM response time: {end - start:.2f} seconds")
+    if return_dict:
+        return all_feedback
     return format_feedback(all_feedback)

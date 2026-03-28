@@ -151,9 +151,11 @@ To test the rag
 ### Mac / Linux
 ```sh
 PYTHONPATH=. uv run python test/test_rag.py
+PYTHONPATH=. uv run python test/g_eval_tests.py
 ```
 
 ### Windows
 ```sh
 $env:PYTHONPATH="."; uv run python test/test_rag.py
+$env:PYTHONPATH="."; uv run python test/g_eval_tests.py
 ```

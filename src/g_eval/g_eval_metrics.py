@@ -89,7 +89,6 @@ Consider:
 4. Simplicity – Does it suggest clearer ways to express ideas?
 
 Scoring:
-
 1 – Feedback does not improve clarity or introduces confusion.
 2 – Some helpful suggestions but many unclear or weak ones.
 3 – Generally improves clarity but misses important issues.
