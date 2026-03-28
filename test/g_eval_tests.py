@@ -6,7 +6,7 @@ def run_full_evaluation(user_prompt):
     """Run the full evaluation process for grammar, style, and clarity."""
     feedback = query_rag(
         user_prompt,
-        style="essay", # fantasy
+        style="essay", # fiction
         return_dict=True
     )
 

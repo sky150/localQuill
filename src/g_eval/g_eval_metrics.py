@@ -1,7 +1,5 @@
 
 ## ToDo:
-    # Split into 3 Steps. Grammer, Style and Clarity each get a score of 1-5.
-    # So we rate each individual LLM call seperately.
     # Additionally we have a Faithfullnes Metric. This determines if the Collected Rag Contexts are Faithfull to the User Prompt. 
 
 from deepeval.metrics import GEval
@@ -28,11 +26,11 @@ Consider:
 4. Clarity – Are explanations understandable?
 
 Scoring:
-1 – Mostly incorrect or misleading feedback.
-2 – Some correct grammar observations but unreliable.
-3 – Generally correct but incomplete.
-4 – Accurate and useful grammar feedback.
-5 – Highly accurate, comprehensive, and precise.
+0.0–0.2 – Mostly incorrect or misleading feedback.
+0.3–0.4 – Some correct grammar observations but unreliable.
+0.5–0.6 – Generally correct but incomplete.
+0.7–0.8 – Accurate and useful grammar feedback.
+0.9–1.0 – Highly accurate, comprehensive, and precise.
 """
 
 grammar_metric = GEval(
@@ -59,11 +57,11 @@ Consider:
 4. Readability – Does it help make sentences more engaging or fluent?
 
 Scoring:
-1 – Style feedback is incorrect, irrelevant, or harmful.
-2 – Some useful suggestions but many weak or unnecessary ones.
-3 – Generally helpful but limited in depth or coverage.
-4 – Useful and effective style improvements.
-5 – Highly effective style feedback that significantly improves fluency and readability.
+0.0–0.2 – Style feedback is incorrect, irrelevant, or harmful.
+0.3–0.4 – Some useful suggestions but many weak or unnecessary ones.
+0.5–0.6 – Generally helpful but limited in depth or coverage.
+0.7–0.8 – Useful and effective style improvements.
+0.9–1.0 – Highly effective style feedback that significantly improves fluency and readability.
 """
 
 style_metric = GEval(
@@ -89,11 +87,11 @@ Consider:
 4. Simplicity – Does it suggest clearer ways to express ideas?
 
 Scoring:
-1 – Feedback does not improve clarity or introduces confusion.
-2 – Some helpful suggestions but many unclear or weak ones.
-3 – Generally improves clarity but misses important issues.
-4 – Effectively improves understanding of the text.
-5 – Significantly enhances clarity and removes confusion throughout.
+0.0–0.2 – Feedback does not improve clarity or introduces confusion.
+0.3–0.4 – Some helpful suggestions but many unclear or weak ones.
+0.5–0.6 – Generally improves clarity but misses important issues.
+0.7–0.8 – Effectively improves understanding of the text.
+0.9–1.0 – Significantly enhances clarity and removes confusion throughout.
 """
 
 clarity_metric = GEval(
