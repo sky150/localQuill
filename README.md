@@ -120,12 +120,12 @@ uv run -m src.vector_db.generate_chroma --reset
 ```sh
 COLLECTION_NAME=essay DATA_PATH=./data/styles/essay uv run -m src.vector_db.generate_chroma
 
-COLLECTION_NAME=fantasy DATA_PATH=./data/styles/fantasy uv run -m src.vector_db.generate_chroma
+COLLECTION_NAME=fiction DATA_PATH=./data/styles/fiction uv run -m src.vector_db.generate_chroma
 ```
 ### Windows
 ```sh
 $env:COLLECTION_NAME="essay"; $env:DATA_PATH="./data/styles/essay"; uv run -m src.vector_db.generate_chroma
-$env:COLLECTION_NAME="fantasy"; $env:DATA_PATH="./data/styles/fantasy"; uv run -m src.vector_db.generate_chroma
+$env:COLLECTION_NAME="fiction"; $env:DATA_PATH="./data/styles/fiction"; uv run -m src.vector_db.generate_chroma
 ```
 
 
@@ -151,11 +151,29 @@ To test the rag
 ### Mac / Linux
 ```sh
 PYTHONPATH=. uv run python test/test_rag.py
+```
+
+### Windows
+```sh
+$env:PYTHONPATH="."; uv run python test/test_rag.py
+```
+
+## G-Eval
+### Generate seperate DB for evaluation
+
+```sh
+COLLECTION_NAME=essay DATA_PATH=./data/eval CHROMA_PATH=./test/chroma_eval uv run -m src.vector_db.generate_chroma
+```
+
+### Run Tests
+
+#### Mac / Linux
+```sh
+PYTHONPATH=. uv run python test/test_retrieval.py
 PYTHONPATH=. uv run python test/g_eval_tests.py
 ```
 
 ### Windows
 ```sh
 $env:PYTHONPATH="."; uv run python test/test_rag.py
-$env:PYTHONPATH="."; uv run python test/g_eval_tests.py
-```
+$env:PYTHONPATH="."; uv run python test/test_g_eval.py

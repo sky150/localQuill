@@ -2,11 +2,11 @@ import src.g_eval.g_eval_metrics as g_eval_metrics
 from src.model_query import query_rag
 
 
-def run_full_evaluation(user_prompt):
+def run_full_evaluation(user_prompt, style="essay"):
     """Run the full evaluation process for grammar, style, and clarity."""
     feedback = query_rag(
         user_prompt,
-        style="essay", # fiction
+        style=style, 
         return_dict=True
     )
 
@@ -40,6 +40,8 @@ def run_full_evaluation(user_prompt):
 
 if __name__ == "__main__":
 
+    style="essay" # "essay" or "fiction"
+
     test_user_prompt = """It cannot be denied that tourism is an economic force \n
 and that over the past decades it has gone from strength
 to strength. Both texts give us some insight into one
@@ -68,4 +70,4 @@ to the vlogger and feel any tourism company would
 benefit from the clear delight behind each experience in
 promoting their company."""
 
-    run_full_evaluation(test_user_prompt)
+    run_full_evaluation(test_user_prompt, style)
