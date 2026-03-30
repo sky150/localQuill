@@ -1,13 +1,17 @@
 import os
 import json
+import time
 from dotenv import load_dotenv
 import src.evaluation.metrics_retrieval as metrics_retrieval
 from src.model_query import get_db, text_normalization, similarity_search
+from eval_config import EVAL_CONFIG, get_eval_results, save_eval_record
 
 
 def retrieval_evaluation():
     with open("test/retrieval_test_questions.json", "r", encoding="utf-8") as f:
         test_cases = json.load(f)
+
+    EVAL_RESULTS_PATH = "reports/eval_results.jsonl"
 
     eval_model = os.getenv("EVAL_MODEL", "all-MiniLM-L6-v2")
     chunk_size = os.getenv("EVAL_CHUNK_SIZE", "1500")
@@ -15,20 +19,21 @@ def retrieval_evaluation():
     collection_name = os.getenv("COLLECTION_NAME", "essay")
 
     print(f"=== Starting Retrieval Evaluation ===")
-    print(f"Embedding Model: {eval_model}")
-    print(f"Chunk Size: {chunk_size}")
-    print("=" * 37 + "\n")
-
-    total_score = 0
-    valid_tests = 0
+    print(f"Embedding Model: {EVAL_CONFIG[embedding_model]}")
+    print(f"Chunk Size: {EVAL_CONFIG[chunk_size]}")
+    print("=" * 36 + "\n")
 
     try:
-        eval_db = get_db(chroma_path=eval_db_path, collection_name=collection_name)
+        eval_db = get_db(
+            chroma_path=EVAL_CONFIG["eval_db_path"],
+            collection_name=EVAL_CONFIG["collection_name"],
+        )
     except Exception as e:
-        print(f"Could not load test database at {eval_db_path}.")
-        print(f"Error: {e}")
-        print("Did you run generate_chroma.py pointing to the eval path?")
+        print(f"Could not load test database. Error: {e}")
         return
+
+    results_log = []
+    run_start = time.time()
 
     for i, tc in enumerate(test_cases):
         query = tc["query"]
@@ -39,8 +44,8 @@ def retrieval_evaluation():
         results = similarity_search(
             db=eval_db,
             user_text=normalized_query,
-            collection_name=collection_name,
-            top_k=3,
+            collection_name=EVAL_CONFIG["collection_name"],
+            top_k=EVAL_CONFIG["top_k"],
         )
 
         if isinstance(results, str):
@@ -50,20 +55,32 @@ def retrieval_evaluation():
 
         if not retrieved_chunks:
             print("No chunks retrieved for this query.")
-            print("-" * 50)
+            print("-" * 36)
             continue
 
         score, reason = metrics_retrieval.evaluate_retrieval(query, retrieved_chunks)
-        total_score += score
-        valid_tests += 1
 
         print(f"Relevancy Score: {score}")
         print(f"Reason: {reason}")
         print("-" * 50)
 
-    if valid_tests > 0:
-        average_score = total_score / valid_tests
-        print(f"\nFinal Average Relevancy Score for {eval_model}: {average_score:.2f}")
+        results_log.append(
+            {
+                "query": query,
+                "expected_document": tc.get("expected_document", "N/A"),
+                "score": score,
+                "reason": reason,
+            }
+        )
+
+    duration = time.time() - run_start
+
+    if results_log:
+        average_score = sum(r["score"] for r in results_log) / len(results_log)
+        print(f"\nAverage relevancy score: {average_score:.2f}")
+
+        record = get_eval_results("retrieval", duration, average_score, results_log)
+        save_eval_record(record)
 
 
 if __name__ == "__main__":

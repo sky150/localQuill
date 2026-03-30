@@ -1,20 +1,18 @@
-
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase
 from deepeval.test_case import LLMTestCaseParams, LLMTestCase
 from deepeval.models import OllamaModel
+
 # from dotenv import load_dotenv
 # load_dotenv()
 
 ## ToDo:
-    # Split into 3 Steps. Grammer, Style and Clarity each get a score of 1-5.
-    # So we rate each individual LLM call seperately.
-    # Additionally we have a Faithfullnes Metric. This determines if the Collected Rag Contexts are Faithfull to the User Prompt. 
+# Split into 3 Steps. Grammer, Style and Clarity each get a score of 1-5.
+# So we rate each individual LLM call seperately.
+# Additionally we have a Faithfullnes Metric. This determines if the Collected Rag Contexts are Faithfull to the User Prompt.
 
 # Evaluates the generation: How well the LLM gives Grammar, Style, and Clarity feedback
-ollama_model = OllamaModel(
-    model="llama3.1:8b"
-)
+ollama_model = OllamaModel(model="llama3.1:8b")
 
 grammar_criteria = """
 Grammar Feedback Quality (1–5):
@@ -117,6 +115,7 @@ def evaluate_grammar(user_text, grammar_feedback):
 
     print(f"Grammar Score: {grammar_metric.score}")
     print(f"Reason: {grammar_metric.reason}")
+    return grammar_metric.score, grammar_metric.reason
 
 
 def evaluate_style(user_text, style_feedback):
@@ -128,6 +127,8 @@ def evaluate_style(user_text, style_feedback):
 
     print(f"Style Score: {style_metric.score}")
     print(f"Reason: {style_metric.reason}")
+    return style_metric.score, style_metric.reason
+
 
 def evaluate_clarity(user_text, clarity_feedback):
     test_case = LLMTestCase(
@@ -138,3 +139,4 @@ def evaluate_clarity(user_text, clarity_feedback):
     clarity_metric.measure(test_case)
     print(f"Clarity Score: {clarity_metric.score}")
     print(f"Reason: {clarity_metric.reason}")
+    return clarity_metric.score, clarity_metric.reason

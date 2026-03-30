@@ -1,9 +1,19 @@
+import time
 import src.evaluation.metrics_generation as metrics_generation
 from src.model_query import query_rag
+from eval_config import EVAL_CONFIG, get_eval_results, save_eval_record
 
 
 def run_full_evaluation(user_prompt):
     """Run the full evaluation process for grammar, style, and clarity."""
+
+    print(f"=== Starting Generation Evaluation ===")
+    print(f"LLM Model: {EVAL_CONFIG['llm_model']}")
+    print("=" * 36 + "\n")
+
+    run_start = time.time()
+    results_log = []
+
     feedback = query_rag(user_prompt, style="essay", return_dict=True)  # fantasy
 
     grammar_feedback = "\n".join(feedback["grammar"])
@@ -12,15 +22,30 @@ def run_full_evaluation(user_prompt):
 
     print("\n--- Running Grammar Evaluation ---")
 
-    metrics_generation.evaluate_grammar(user_prompt, grammar_feedback)
+    g_score, g_reason = metrics_generation.evaluate_grammar(
+        user_prompt, grammar_feedback
+    )
+    results_log.append({"metric": "grammar", "score": g_score, "reason": g_reason})
 
     print("\n--- Running Style Evaluation ---")
 
-    metrics_generation.evaluate_style(user_prompt, style_feedback)
+    s_score, s_reason = metrics_generation.evaluate_style(user_prompt, style_feedback)
+    results_log.append({"metric": "style", "score": s_score, "reason": s_reason})
 
     print("\n--- Running Clarity Evaluation ---")
 
-    metrics_generation.evaluate_clarity(user_prompt, clarity_feedback)
+    c_score, c_reason = metrics_generation.evaluate_clarity(
+        user_prompt, clarity_feedback
+    )
+    results_log.append({"metric": "clarity", "score": c_score, "reason": c_reason})
+
+    duration = time.time() - run_start
+    average_score = (g_score + s_score + c_score) / 3
+
+    print(f"\nAverage generation score: {average_score:.2f}")
+
+    record = get_eval_results("generation", duration, average_score, results_log)
+    save_eval_record(record)
 
 
 if __name__ == "__main__":
