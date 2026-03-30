@@ -6,6 +6,7 @@ from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase
 from deepeval.test_case import LLMTestCaseParams, LLMTestCase
 from deepeval.models import OllamaModel
+
 # from dotenv import load_dotenv
 # load_dotenv()
 
@@ -114,6 +115,7 @@ def evaluate_grammar(user_text, grammar_feedback):
 
     print(f"Grammar Score: {grammar_metric.score}")
     print(f"Reason: {grammar_metric.reason}")
+    return grammar_metric.score, grammar_metric.reason
 
 
 def evaluate_style(user_text, style_feedback):
@@ -125,6 +127,8 @@ def evaluate_style(user_text, style_feedback):
 
     print(f"Style Score: {style_metric.score}")
     print(f"Reason: {style_metric.reason}")
+    return style_metric.score, style_metric.reason
+
 
 def evaluate_clarity(user_text, clarity_feedback):
     test_case = LLMTestCase(

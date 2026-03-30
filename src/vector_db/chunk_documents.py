@@ -1,7 +1,8 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
 import os
+
 
 # Split documents into smaller chunks
 def split_documents(documents: list[Document]):
@@ -18,7 +19,7 @@ def split_documents(documents: list[Document]):
 # Id Format: "data/testing/Understanding_Climate_Change.pdf:6:2"
 # Page Source : Page Number : Chunk Index
 def calculate_chunk_ids(chunks):
-    # This will create IDs like 
+    # This will create IDs like
 
     last_page_id = None
     current_chunk_index = 0
@@ -41,3 +42,4 @@ def calculate_chunk_ids(chunks):
         chunk.metadata["id"] = chunk_id
 
     return chunks
+
