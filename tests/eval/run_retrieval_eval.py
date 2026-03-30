@@ -8,19 +8,12 @@ from eval_config import EVAL_CONFIG, get_eval_results, save_eval_record
 
 
 def retrieval_evaluation():
-    with open("test/retrieval_test_questions.json", "r", encoding="utf-8") as f:
+    with open("tests/eval/retrieval_test_questions.json", "r", encoding="utf-8") as f:
         test_cases = json.load(f)
 
-    EVAL_RESULTS_PATH = "reports/eval_results.jsonl"
-
-    eval_model = os.getenv("EVAL_MODEL", "all-MiniLM-L6-v2")
-    chunk_size = os.getenv("EVAL_CHUNK_SIZE", "1500")
-    eval_db_path = os.getenv("CHROMA_EVAL_PATH", "./test/chroma_eval")
-    collection_name = os.getenv("COLLECTION_NAME", "essay")
-
     print(f"=== Starting Retrieval Evaluation ===")
-    print(f"Embedding Model: {EVAL_CONFIG[embedding_model]}")
-    print(f"Chunk Size: {EVAL_CONFIG[chunk_size]}")
+    print(f"Embedding Model: {EVAL_CONFIG['embedding_model']}")
+    print(f"Chunk Size: {EVAL_CONFIG['chunk_size']}")
     print("=" * 36 + "\n")
 
     try:

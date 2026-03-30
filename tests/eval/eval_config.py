@@ -16,7 +16,7 @@ EVAL_CONFIG = {
     "judge_model": "llama3.1:8b",
     "eval_db_path": os.getenv("CHROMA_EVAL_PATH", "./tests/chroma_eval"),
     "collection_name": os.getenv("COLLECTION_NAME", "essay"),
-    "results_path": "reports/eval_results.jsonl",
+    "results_path": "reports",
 }
 
 
@@ -43,9 +43,12 @@ def get_eval_results(
 
 
 def save_eval_record(record):
-    results_path = "reports/"
-    os.makedirs(results_path, exist_ok=True)
+    file_path = EVAL_CONFIG["results_path"]
+    os.makedirs(file_path, exist_ok=True)
 
-    with open(results_path, "a", encoding="utf-8") as f:
+    results_file = os.path.join(file_path, "eval_results.jsonl")
+
+    with open(results_file, "a", encoding="utf-8") as f:
         f.write(json.dumps(record) + "\n")
-    print(f"\nResults saved to {results_path}")
+
+    print(f"\nResults saved to {file_path}")

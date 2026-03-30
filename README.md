@@ -162,18 +162,24 @@ $env:PYTHONPATH="."; uv run python test/test_rag.py
 ### Generate seperate DB for evaluation
 
 ```sh
-COLLECTION_NAME=essay DATA_PATH=./data/eval CHROMA_PATH=./test/chroma_eval uv run -m src.vector_db.generate_chroma
+COLLECTION_NAME=essay DATA_PATH=./data/eval CHROMA_PATH=./tests/chroma_eval uv run -m src.vector_db.generate_chroma
 ```
 
 ### Run Tests
 
 #### Mac / Linux
 ```sh
-PYTHONPATH=. uv run python test/test_retrieval.py
-PYTHONPATH=. uv run python test/g_eval_tests.py
+PYTHONPATH=. uv run python tests/eval/run_retrieval_eval.py
+PYTHONPATH=. uv run python tests/eval/run_generation_eval.py
 ```
 
 ### Windows
 ```sh
-$env:PYTHONPATH="."; uv run python test/test_rag.py
-$env:PYTHONPATH="."; uv run python test/g_eval_tests.py
+$env:PYTHONPATH="."; uv run python tests/eval/run_retrieval_eval.py
+$env:PYTHONPATH="."; uv run python tests/eval/run_generation_eval.py
+```
+
+### Jupyter notebooks
+```sh
+uv run jupyter notebook
+```
