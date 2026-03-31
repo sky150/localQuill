@@ -138,4 +138,4 @@ def evaluate_clarity(user_text, clarity_feedback):
     clarity_metric.measure(test_case)
     print(f"Clarity Score: {clarity_metric.score}")
     print(f"Reason: {clarity_metric.reason}")
-
+    return clarity_metric.score, clarity_metric.reason
