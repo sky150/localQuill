@@ -1,6 +1,5 @@
-
 ## ToDo:
-    # Additionally we have a Faithfullnes Metric. This determines if the Collected Rag Contexts are Faithfull to the User Prompt. 
+# Additionally we have a Faithfullnes Metric. This determines if the Collected Rag Contexts are Faithfull to the User Prompt.
 
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase
@@ -12,9 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ollama_model = OllamaModel(
-    model="llama3.1:8b"
-)
+ollama_model = OllamaModel(model=os.getenv("LOCAL_MODEL", "llama3.1:8b"))
 
 grammar_criteria = """
 Grammar Feedback Quality (1–5):
@@ -141,3 +138,4 @@ def evaluate_clarity(user_text, clarity_feedback):
     clarity_metric.measure(test_case)
     print(f"Clarity Score: {clarity_metric.score}")
     print(f"Reason: {clarity_metric.reason}")
+
