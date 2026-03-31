@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain_ollama import OllamaEmbeddings
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter 
 
 
 load_dotenv()
@@ -16,8 +16,8 @@ def get_embedding_function(logger=None):
 
     if provider == "ollama":
         return OllamaEmbeddings(
-            model="nomic-embed-text",  # os.getenv("EMBEDDING_MODEL", "nomic-embed-text"),
-            base_url="http://127.0.0.1:11434",
+            model="nomic_embed-text",      #os.getenv("EMBEDDING_MODEL", "nomic-embed-text"),
+            base_url="http://127.0.0.1:11434"
         )
 
     elif provider == "huggingface":
@@ -27,6 +27,9 @@ def get_embedding_function(logger=None):
 
     else:
         raise ValueError(f"Unknown embedding provider: {provider}")
+    
+
+
 
 
 def chunk_user_prompt(text: str, chunk_size: int, chunk_overlap: int):
@@ -34,7 +37,7 @@ def chunk_user_prompt(text: str, chunk_size: int, chunk_overlap: int):
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
-        separators=["\n\n", "\n", ". " " ", ""],
+        separators=["\n\n", "\n", ". " " ", ""]
     )
 
     return splitter.split_text(text)

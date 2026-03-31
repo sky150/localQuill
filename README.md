@@ -120,12 +120,12 @@ uv run -m src.vector_db.generate_chroma --reset
 ```sh
 COLLECTION_NAME=essay DATA_PATH=./data/styles/essay uv run -m src.vector_db.generate_chroma
 
-COLLECTION_NAME=fantasy DATA_PATH=./data/styles/fantasy uv run -m src.vector_db.generate_chroma
+COLLECTION_NAME=fiction DATA_PATH=./data/styles/fiction uv run -m src.vector_db.generate_chroma
 ```
 ### Windows
 ```sh
 $env:COLLECTION_NAME="essay"; $env:DATA_PATH="./data/styles/essay"; uv run -m src.vector_db.generate_chroma
-$env:COLLECTION_NAME="fantasy"; $env:DATA_PATH="./data/styles/fantasy"; uv run -m src.vector_db.generate_chroma
+$env:COLLECTION_NAME="fiction"; $env:DATA_PATH="./data/styles/fiction"; uv run -m src.vector_db.generate_chroma
 ```
 
 

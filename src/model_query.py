@@ -14,34 +14,63 @@ logger.setLevel(logging.DEBUG)
 load_dotenv()
 
 STYLE_PROMPTS = {
-    "essay": "Apply academic essay writing standards: formal tone, clear thesis, structured argumentation.",
-    "fantasy": "Apply creative fiction standards: vivid world-building, narrative voice, show-don't-tell.",
-    "formal": "Apply formal writing standards: professional tone, precise language, no contractions.",
+    "essay": """You are a strict academic writing editor.
+Your ONLY job is to give bullet-point feedback on the text below.
+Do NOT rewrite the text. Do NOT give general writing advice.
+Standards: formal tone, clear thesis, structured argumentation.""",
+
+    "fiction": """You are a fiction editor giving targeted revision notes.
+Your ONLY job is to give bullet-point feedback on the text below.
+Do NOT rewrite the text. Do NOT explain general writing theory.
+Standards: narrative voice, pacing, worldbuilding consistency, character clarity."""
 }
 
 # Prompt optimierung
 SUB_PROMPTS = {
-    "grammar": "Focus only on grammar errors",
-    "style": "Focus only on writing style",
-    "clarity": "Focus only on clarity",
+    "grammar": """TASK: Find grammar and punctuation issues only.
+OUTPUT FORMAT:
+- Quote the problem phrase in "quotes"
+- State the error type (e.g. tense shift, comma splice, subject-verb agreement)
+- Give the corrected version
+Limit: maximum 8 issues. Ignore style. Ignore word choice.""",
+
+    "style": """TASK: Identify style weaknesses only.
+OUTPUT FORMAT:
+- Quote the relevant phrase or sentence in "quotes"
+- Name the issue (e.g. passive voice, weak verb, inconsistent register)
+- Suggest a concrete revision direction in one sentence
+Limit: maximum 5 issues. Ignore grammar. Ignore content.""",
+
+    "clarity": """TASK: Find sentences or passages that are unclear or hard to follow.
+OUTPUT FORMAT:
+- Quote the unclear passage in "quotes"
+- Explain in one sentence why it is unclear
+- Suggest one specific change to fix it
+Limit: maximum 5 issues. Ignore grammar. Ignore style.""",
 }
 
-PROMPT_TEMPLATE = """
-You are an expert writing coach specialising in {style_context}. Use the following writing guidelines 
-to give specific, actionable feedback on the user's text.
 
-Language: en-GB
 
-Writing Guidelines (from style guides):
-{context}
+PROMPT_TEMPLATE = """ROLE: {style_context}
 
-Your Task:
+WRITING GUIDELINES (use these as your standard):
+Only use relevant to your specific task: {context}
+
+---
+TASK:
 {focus_instruction}
 
-User's Text:
+TEXT TO REVIEW:
 {question}
 
-Be specific: reference parts of the text directly.
+---
+RULES:
+- Write in en-GB
+- Be specific: quote the text directly when referencing it
+- Do NOT summarise or praise the text
+- Do NOT rewrite full paragraphs
+- Stay strictly within the focus area of your task
+- If there are no issues to report, write: "No significant issues found."
 """
 
 CHROMA_PATH = os.getenv("CHROMA_PATH", "./chroma")
