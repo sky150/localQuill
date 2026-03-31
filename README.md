@@ -86,14 +86,14 @@ Sequency Diagramm (MermaidLive):
 
 ```
 sequenceDiagram
-    UI->>+PromptAPI: Prompt
-    PromptAPI->>+Rag: Query for context
-    Rag->>+PromptAPI: Related Chunks
-    PromptAPI->>+LocalLLM: Context and Prompt
-    LocalLLM->>+UI: Response
+    Chainlit->>+Backend: User Text
+    Backend->>+ChromaDB: RAG Similarity Search
+    ChromaDB->>+Backend: Context Vectors
+    Backend->>+Mini-LLM: Context and Prompt
+    Mini-LLM->>+Chainlit: Response
 ```
 
-![Mermaid Sequence Diagram](/.attachements/SequenceDiagram.png "Mermaid SequenceDiagram")
+![Mermaid Sequence Diagram](/.attachements/ "Mermaid SequenceDiagram")
 
 
 
@@ -120,12 +120,12 @@ uv run -m src.vector_db.generate_chroma --reset
 ```sh
 COLLECTION_NAME=essay DATA_PATH=./data/styles/essay uv run -m src.vector_db.generate_chroma
 
-COLLECTION_NAME=fantasy DATA_PATH=./data/styles/fantasy uv run -m src.vector_db.generate_chroma
+COLLECTION_NAME=fiction DATA_PATH=./data/styles/fiction uv run -m src.vector_db.generate_chroma
 ```
 ### Windows
 ```sh
 $env:COLLECTION_NAME="essay"; $env:DATA_PATH="./data/styles/essay"; uv run -m src.vector_db.generate_chroma
-$env:COLLECTION_NAME="fantasy"; $env:DATA_PATH="./data/styles/fantasy"; uv run -m src.vector_db.generate_chroma
+$env:COLLECTION_NAME="fiction"; $env:DATA_PATH="./data/styles/fiction"; uv run -m src.vector_db.generate_chroma
 ```
 
 
@@ -156,4 +156,30 @@ PYTHONPATH=. uv run python test/test_rag.py
 ### Windows
 ```sh
 $env:PYTHONPATH="."; uv run python test/test_rag.py
+```
+
+## G-Eval
+### Generate seperate DB for evaluation
+
+```sh
+COLLECTION_NAME=essay DATA_PATH=./data/eval CHROMA_PATH=./tests/chroma_eval uv run -m src.vector_db.generate_chroma
+```
+
+### Run Tests
+
+#### Mac / Linux
+```sh
+PYTHONPATH=. uv run python tests/eval/run_retrieval_eval.py
+PYTHONPATH=. uv run python tests/eval/run_generation_eval.py
+```
+
+### Windows
+```sh
+$env:PYTHONPATH="."; uv run python tests/eval/run_retrieval_eval.py
+$env:PYTHONPATH="."; uv run python tests/eval/run_generation_eval.py
+```
+
+### Jupyter notebooks
+```sh
+uv run jupyter notebook
 ```

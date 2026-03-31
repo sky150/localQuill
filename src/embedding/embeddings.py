@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 from langchain_ollama import OllamaEmbeddings
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter 
 
 
 load_dotenv()
@@ -28,29 +29,15 @@ def get_embedding_function(logger=None):
         raise ValueError(f"Unknown embedding provider: {provider}")
     
 
-# def get_chunk_size():
-#     model = os.getenv("EMBEDDING_MODEL", "")
 
-#     if "mpnet" in model:
-#         return 350
-#     elif "MiniLM" in model:
-#         return 300
-#     elif "nomic" in model:
-#         return 250
-#     else:
-#         return 300
-    
+
 
 def chunk_user_prompt(text: str, chunk_size: int, chunk_overlap: int):
-    words = text.split()
-    chunks = []
+    """Splits the user prompt into chunks of a specified size based on words with a specified overlap."""
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        separators=["\n\n", "\n", ". " " ", ""]
+    )
 
-    step = chunk_size - chunk_overlap
-
-    for i in range(0, len(words), step):
-        if len(chunk) < chunk_size * 0.5:
-            break # Mini chunk which would falsify similarity search
-        chunk = words[i:i + chunk_size]
-        chunks.append(" ".join(chunk))
-
-    return chunks
+    return splitter.split_text(text)

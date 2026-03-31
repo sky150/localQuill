@@ -5,29 +5,34 @@ from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from src.embedding.embeddings import get_embedding_function
-from src.vector_db.load_pdf import load_documents
-from src.vector_db.create_chunks import split_documents, calculate_chunk_ids
+from src.vector_db.load_documents import load_documents
+from src.vector_db.chunk_documents import split_documents, calculate_chunk_ids
 from src.vector_db.reset_db import reset_db
 
 logger = logging.getLogger(__name__)
+
 
 def add_to_chroma(
     chunks: list[Document], chroma_path="./chroma", collection_name="default"
 ):
     if not chunks:
-        logger.warning(f"No chunks to add for collection '{collection_name}'. Skipping.")
+        logger.warning(
+            f"No chunks to add for collection '{collection_name}'. Skipping."
+        )
         print(f"No chunks to add for collection '{collection_name}'. Skipping.")
         return
 
     abs_chroma_path = os.path.abspath(chroma_path)
     db = Chroma.from_documents(
         documents=chunks,
-        embedding=get_embedding_function(), 
+        embedding=get_embedding_function(),
         persist_directory=abs_chroma_path,
         collection_name=collection_name,
     )
     logger.info(f"Successfully saved {len(chunks)} chunks to {chroma_path}")
-    logger.info(f"Collection '{collection_name}' now has {len(db.get()['ids'])} documents.")
+    logger.info(
+        f"Collection '{collection_name}' now has {len(db.get()['ids'])} documents."
+    )
     print(f"Successfully saved {len(chunks)} chunks to {chroma_path}")
     print(f"Collection '{collection_name}' now has {len(db.get()['ids'])} documents.")
 
@@ -59,7 +64,7 @@ def main():
     data_path = os.getenv("DATA_PATH", "./data/styles/essay")
     chroma_path = os.getenv("CHROMA_PATH", "./chroma")
     collection_name = os.getenv("COLLECTION_NAME", "essay")
-    
+
     # Check if the database should be cleared (using the --reset flag).
     parser = argparse.ArgumentParser()
     parser.add_argument("--reset", action="store_true", help="Reset the database.")
@@ -75,4 +80,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
