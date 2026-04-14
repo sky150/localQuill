@@ -16,7 +16,7 @@ def get_embedding_function(logger=None):
 
     if provider == "ollama":
         return OllamaEmbeddings(
-            model="nomic_embed-text",      #os.getenv("EMBEDDING_MODEL", "nomic-embed-text"),
+            model=os.getenv("EMBEDDING_MODEL", "nomic-embed-text"),
             base_url="http://127.0.0.1:11434"
         )
 

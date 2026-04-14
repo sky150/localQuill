@@ -12,9 +12,7 @@ from src.vector_db.reset_db import reset_db
 logger = logging.getLogger(__name__)
 
 
-def add_to_chroma(
-    chunks: list[Document], chroma_path="./chroma", collection_name="default"
-):
+def add_to_chroma(chunks: list[Document], chroma_path="./chroma", collection_name="default"):
     if not chunks:
         logger.warning(
             f"No chunks to add for collection '{collection_name}'. Skipping."
@@ -30,9 +28,7 @@ def add_to_chroma(
         collection_name=collection_name,
     )
     logger.info(f"Successfully saved {len(chunks)} chunks to {chroma_path}")
-    logger.info(
-        f"Collection '{collection_name}' now has {len(db.get()['ids'])} documents."
-    )
+    logger.info(f"Collection '{collection_name}' now has {len(db.get()['ids'])} documents.")
     print(f"Successfully saved {len(chunks)} chunks to {chroma_path}")
     print(f"Collection '{collection_name}' now has {len(db.get()['ids'])} documents.")
 
@@ -53,7 +49,7 @@ def add_to_chroma(
         new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
         db.add_documents(
             new_chunks, ids=new_chunk_ids
-        )  # db.add_documents(new_chunks, ids=new_chunk_ids)
+        ) 
     else:
         logger.info("No new documents to add")
 
