@@ -155,7 +155,8 @@ PYTHONPATH=. uv run python test/test_rag.py
 
 ### Windows
 ```sh
-$env:PYTHONPATH="."; uv run python test/test_rag.py
+$env:PYTHONPATH="."; uv run python tests/test_rag.py
+$env:PYTHONPATH="."; uv run python tests/eval/batch_llm_test.py
 ```
 
 ## G-Eval
