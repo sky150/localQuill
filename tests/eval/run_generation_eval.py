@@ -24,22 +24,15 @@ def run_full_evaluation(user_prompt, style="essay"):
     clarity_feedback = "\n".join(feedback["clarity"])
 
     print("\n--- Running Grammar Evaluation ---")
-
-    g_score, g_reason = metrics_generation.evaluate_grammar(
-        user_prompt, grammar_feedback
-    )
+    g_score, g_reason = metrics_generation.evaluate_grammar(user_prompt, grammar_feedback)
     results_log.append({"metric": "grammar", "score": g_score, "reason": g_reason})
 
     print("\n--- Running Style Evaluation ---")
-
     s_score, s_reason = metrics_generation.evaluate_style(user_prompt, style_feedback)
     results_log.append({"metric": "style", "score": s_score, "reason": s_reason})
 
     print("\n--- Running Clarity Evaluation ---")
-
-    c_score, c_reason = metrics_generation.evaluate_clarity(
-        user_prompt, clarity_feedback
-    )
+    c_score, c_reason = metrics_generation.evaluate_clarity(user_prompt, clarity_feedback)
     results_log.append({"metric": "clarity", "score": c_score, "reason": c_reason})
 
     duration = time.time() - run_start
