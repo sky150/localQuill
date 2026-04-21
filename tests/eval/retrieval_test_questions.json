@@ -1,32 +1,27 @@
 [
   {
-    "query": "How is the organisation of an essay graded in the C2 exam?",
-    "expected_document": "Essay_c2_writing_masterclass_digital_sample.pdf",
-    "expected_concept": "This criterion focuses on how your ideas are organised into paragraphs, if these are needed. It includes the use of discourse markers that act to make the text cohesive."
+    "query": "What makes a thesis arguable rather than descriptive?",
+    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
+    "expected_concept": "A strong thesis is arguable, which means a thoughtful reader could disagree with it and therefore needs your careful analysis of the evidence to understand how you arrived at this claim."
   },
   {
-    "query": "What does communicative achievement mean in the C2 writing assessment?",
-    "expected_document": "Essay_c2_writing_masterclass_digital_sample.pdf",
-    "expected_concept": "This criterion focuses on how well you communicate with the reader. This includes whether your writing is suitable for the task you are writing, and it also involves register."
+    "query": "What should an essay introduction contain?",
+    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
+    "expected_concept": "A strong introduction should contain orienting information, an explanation of what is at stake in your essay, and your thesis."
   },
   {
-    "query": "How long should my answer be for Part 1 of the C2 Proficiency Writing paper?",
-    "expected_document": "Essay_c2_writing_masterclass_digital_sample.pdf",
-    "expected_concept": "Part 1: answer should be 240-280 words long."
+    "query": "What is the difference between an analytical and a normative claim?",
+    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
+    "expected_concept": "Analytical claims are based on interpretation of facts, data, or sources. Normative claims are claims of value or evaluation about how things should be rather than how they are."
   },
   {
-    "query": "What are the characteristics of a B2 level candidate response when writing an email?",
-    "expected_document": "Email_Wider-Audience_cambridge_sample_responses_A1-C1.pdf",
-    "expected_concept": "The CEFR states that at B2 level, writers can write letters/emails which convey degrees of emotion and highlight the personal significance of events and experiences, and comment on the correspondent's news and views."
+    "query": "What are common mistakes to avoid when writing an introduction?",
+    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
+    "expected_concept": "Avoid very general opening sentences, funnel introductions, dictionary definitions, and too much detail that a reader could better understand later."
   },
   {
-    "query": "What is the primary issue with the organisation of the text in the A1 candidate email response?",
-    "expected_document": "Email_Wider-Audience_cambridge_sample_responses_A1-C1.pdf",
-    "expected_concept": "There is limited punctuation; this is the main issue with the organisation of the text, and, as a result, the text is difficult to follow."
-  },
-  {
-    "query": "How many marks is the Content assessment criterion worth?",
-    "expected_document": "Essay_c2_writing_masterclass_digital_sample.pdf",
-    "expected_concept": "Max. 5 marks"
+    "query": "How should the scope of a thesis relate to the essay?",
+    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
+    "expected_concept": "A thesis should be the right scope for the essay — not too narrow to explore in depth, and not too broad to support with available evidence."
   }
 ]

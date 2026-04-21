@@ -169,7 +169,10 @@ COLLECTION_NAME=essay DATA_PATH=./data/eval CHROMA_PATH=./tests/chroma_eval uv r
 
 #### Mac / Linux
 ```sh
-PYTHONPATH=. uv run python tests/eval/run_retrieval_eval.py
+EVAL_MODEL=nomic-embed-text PYTHONPATH=. uv run python tests/eval/run_retrieval_eval.py
+EVAL_MODEL=all-MiniLM-L6-v2 PYTHONPATH=. uv run python tests/eval/run_retrieval_eval.py
+EVAL_MODEL=dengcao/Qwen3-Embedding-0.6B:Q8_0 PYTHONPATH=. uv run python tests/eval/run_retrieval_eval.py
+
 PYTHONPATH=. uv run python tests/eval/run_generation_eval.py
 PYTHONPATH=. uv run python tests/eval/batch_llm_test.py
 

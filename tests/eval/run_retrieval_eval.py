@@ -42,29 +42,39 @@ def retrieval_evaluation():
         )
 
         if isinstance(results, str):
-            retrieved_chunks = []
-        else:
-            retrieved_chunks = [doc.page_content for doc, score in results]
-
-        if not retrieved_chunks:
             print("No chunks retrieved for this query.")
             print("-" * 36)
             continue
 
-        score, reason = metrics_retrieval.evaluate_retrieval(query, retrieved_chunks)
+        focus_scores = {}
+        for focus, focus_results in results.items():
+            if not focus_results:
+                continue
+            retrieved_chunks = [doc.page_content for doc, _ in focus_results]
+            focus_query = f"{focus}: {query}"  # gives judge the right frame
 
-        print(f"Relevancy Score: {score}")
-        print(f"Reason: {reason}")
-        print("-" * 50)
+            expected = tc.get("expected_concept", "")
+            focus_query = f"{focus}: {query}\nExpected concept: {expected}"
+            score, reason = metrics_retrieval.evaluate_retrieval(
+                focus_query, retrieved_chunks
+            )
 
-        results_log.append(
-            {
-                "query": query,
-                "expected_document": tc.get("expected_document", "N/A"),
-                "score": score,
-                "reason": reason,
-            }
-        )
+            focus_scores[focus] = {"score": score, "reason": reason}
+            print(f"  [{focus}] Score: {score} | {reason}")
+
+        if focus_scores:
+            avg = sum(v["score"] for v in focus_scores.values()) / len(focus_scores)
+            print(f"  Avg: {avg:.2f}")
+            print("-" * 50)
+            results_log.append(
+                {
+                    "query": query,
+                    "expected_document": tc.get("expected_document", "N/A"),
+                    "expected_concept": tc.get("expected_concept", "N/A"),
+                    "score": avg,
+                    "focus_scores": focus_scores,  # granular breakdown for analysis
+                }
+            )
 
     duration = time.time() - run_start
 

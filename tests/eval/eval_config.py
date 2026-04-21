@@ -19,7 +19,7 @@ EVAL_CONFIG = {
     "collection_name": os.getenv("COLLECTION_NAME", "essay"),
     "results_path": "reports",
     "result_file_name": "eval_retrieval_results.jsonl",
-    "file_name": "Style-Guide"
+    "file_name": "Style-Guide",
 }
 
 
