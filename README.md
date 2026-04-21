@@ -155,7 +155,7 @@ PYTHONPATH=. uv run python test/test_rag.py
 
 ### Windows
 ```sh
-$env:PYTHONPATH="."; uv run python test/test_rag.py
+$env:PYTHONPATH="."; uv run python tests/test_rag.py
 ```
 
 ## G-Eval
@@ -171,12 +171,15 @@ COLLECTION_NAME=essay DATA_PATH=./data/eval CHROMA_PATH=./tests/chroma_eval uv r
 ```sh
 PYTHONPATH=. uv run python tests/eval/run_retrieval_eval.py
 PYTHONPATH=. uv run python tests/eval/run_generation_eval.py
+PYTHONPATH=. uv run python tests/eval/batch_llm_test.py
+
 ```
 
 ### Windows
 ```sh
 $env:PYTHONPATH="."; uv run python tests/eval/run_retrieval_eval.py
 $env:PYTHONPATH="."; uv run python tests/eval/run_generation_eval.py
+$env:PYTHONPATH="."; uv run python tests/eval/batch_llm_test.py
 ```
 
 ### Jupyter notebooks
