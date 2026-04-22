@@ -68,13 +68,13 @@ if __name__ == "__main__":
         # "qwen3.5:4b", # Gets stuck loading forever. Too small to work with our context
         # "llama3.1",
         "mistral", # 7b
-        # "ministral-3:8b",
-        # "minstral-nemo:12b",
-        # "qwen2.5:7b",
-        # "qwen2.5:14b",
-        # "qwen3:8b",
-        # "qwen3:14b",
-        # "mistral-small3.2:24b",
+        "ministral-3:8b",
+        "minstral-nemo:12b",
+        "qwen2.5:7b",
+        "qwen2.5:14b",
+        "qwen3:8b",
+        "qwen3:14b",
+        "mistral-small3.2:24b",
         # kimi 
         # grok
     ] 
@@ -83,12 +83,12 @@ if __name__ == "__main__":
     fiction = get_fiction_dict()
 
     # Remove some items for testing
-    essays.pop("Article_C2_Profishency_Response_3.txt")
-    essays.pop("Wider_Audience_A1.txt")
-    essays.pop("Wider_Audience_A2.txt")
-    essays.pop("Wider_Audience_B1.txt")
-    essays.pop("Wider_Audience_B2.txt")
-    essays.pop("Wider_Audience_C1.txt")
+    # essays.pop("Article_C2_Profishency_Response_3.txt")
+    # essays.pop("Wider_Audience_A1.txt")
+    # essays.pop("Wider_Audience_A2.txt")
+    # essays.pop("Wider_Audience_B1.txt")
+    # essays.pop("Wider_Audience_B2.txt")
+    # essays.pop("Wider_Audience_C1.txt")
 
     test_run_full_evaluation(test_models, essays, style="essay")
 
