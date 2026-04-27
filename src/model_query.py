@@ -207,9 +207,9 @@ def query_rag(user_text: str, style: str = "essay", return_dict: bool = False) -
     if not user_text:
         return "Please provide some text to get feedback on."
 
-    if len(user_text) > 50000:
+    if len(user_text) > 100000:
         return (
-            "Text is too long! It's over 50'000 characters. That's almost 10'000 words. Do you want to wait for an hour?"
+            "Text is too long! It's over 100'000 characters. That's almost 10'000 words. Do you want to wait for an hour?"
             "Please split it into smaller sections."
         )
 

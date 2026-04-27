@@ -59,6 +59,7 @@ def get_fiction_dict():
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
             fiction_dict[file] = content
+            
     return fiction_dict
 
 if __name__ == "__main__":
@@ -66,30 +67,30 @@ if __name__ == "__main__":
     """This will run the full evaluation process for multiple models and multiple texts in a batch manner and add them to the eval_result.json"""
     test_models = [
         # "qwen3.5:4b", # Gets stuck loading forever. Too small to work with our context
-        "llama3.1",
-        "mistral", # 7b
-        "ministral-3:8b",
-        "minstral-nemo:12b",
-        "qwen2.5:7b",
-        "qwen2.5:14b",
-        "qwen3:8b",
-        "qwen3:14b",
-        "mistral-small3.2:24b",
+        # "llama3.1",
+        # "mistral", # 7b
+        # "ministral-3:8b",
+        # "minstral-nemo:12b",
+        # "qwen2.5:7b",
+        # "qwen2.5:14b",
+        # "qwen3:8b",
+        # "qwen3:14b",
+        # "mistral-small3.2:24b",
+        "qwen3.5:9b",  # Run everything over this one as well...
+        # "qwen3.6:27b", # Ridicoulous example
         # kimi 
         # grok
     ] 
 
     essays = get_essay_dict()
-    fiction = get_fiction_dict()
+    # fiction = get_fiction_dict()
 
     # Remove some items for testing
     # essays.pop("Article_C2_Profishency_Response_3.txt")
     # essays.pop("Wider_Audience_A1.txt")
-    # essays.pop("Wider_Audience_A2.txt")
-    # essays.pop("Wider_Audience_B1.txt")
-    # essays.pop("Wider_Audience_B2.txt")
-    # essays.pop("Wider_Audience_C1.txt")
 
+    
     test_run_full_evaluation(test_models, essays, style="essay")
+    #test_run_full_evaluation(test_models, fiction, style="fiction")
 
         
