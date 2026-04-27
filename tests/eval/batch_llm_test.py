@@ -66,7 +66,7 @@ if __name__ == "__main__":
     """This will run the full evaluation process for multiple models and multiple texts in a batch manner and add them to the eval_result.json"""
     test_models = [
         # "qwen3.5:4b", # Gets stuck loading forever. Too small to work with our context
-        # "llama3.1",
+        "llama3.1",
         "mistral", # 7b
         "ministral-3:8b",
         "minstral-nemo:12b",
