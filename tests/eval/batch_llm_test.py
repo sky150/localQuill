@@ -76,14 +76,16 @@ if __name__ == "__main__":
         # "qwen3:8b",
         # "qwen3:14b",
         # "mistral-small3.2:24b",
-        "qwen3.5:9b",  # Run everything over this one as well...
-        # "qwen3.6:27b", # Ridicoulous example
+        # "qwen3.5:9b",  # Run everything over this one as well...
+        "qwen3.6:27b", # Ridicoulous example
         # kimi 
         # grok
     ] 
 
+    # RUN für the other temp as well
+
     essays = get_essay_dict()
-    # fiction = get_fiction_dict()
+    #fiction = get_fiction_dict()
 
     # Remove some items for testing
     # essays.pop("Article_C2_Profishency_Response_3.txt")
