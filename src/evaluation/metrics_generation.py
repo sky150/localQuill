@@ -11,7 +11,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ollama_model = OllamaModel(model=os.getenv("LOCAL_MODEL", "llama3.1:8b"))
+                                                # Needed a bigger model to check fantasy context
+ollama_model = OllamaModel(model=os.getenv("LOCAL_MODEL", "qwen3.6:27b"))   
+# ollama_model = OllamaModel(model=os.getenv("LOCAL_MODEL", "llama3.1:8b"))
 
 grammar_criteria = """
 Grammar Feedback Quality (1–5):
