@@ -13,6 +13,7 @@ dependencies = [
     "langchain-chroma>=1.1.0",
     "langchain-huggingface>=1.2.1",
     "langchain-ollama>=1.0.1",
+    "langchain-openai>=0.3.0",
     "langchain-text-splitters>=1.1.0",
     "matplotlib>=3.10.8",
     "open-webui>=0.8.7",

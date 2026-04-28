@@ -1,5 +1,6 @@
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 import src.embedding.embeddings as embeddings
 from dotenv import load_dotenv
@@ -171,6 +172,9 @@ def llm_call(
 
             try:
                 response = model.invoke(prompt)
+                # ChatOpenAI returns AIMessage; OllamaLLM returns a plain string
+                if hasattr(response, "content"):
+                    response = response.content
                 all_feedback[section].append(response)
             except Exception as e:
                 logger.error(f"LLM invocation failed: {e}")
@@ -197,7 +201,7 @@ def format_feedback(sections: dict) -> str:
     )
 
 
-def query_rag(user_text: str, style: str = "essay", return_dict: bool = False) -> str:
+def query_rag(user_text: str, style: str = "essay", return_dict: bool = False, provider: str = "ollama") -> str:
     """Main function to handle the RAG process for writing feedback."""
 
     user_text = text_normalization(user_text)
@@ -239,12 +243,23 @@ def query_rag(user_text: str, style: str = "essay", return_dict: bool = False) -
         f"3. Completed similarity search for context for LLM in {end - start:.2f} seconds."
     )
 
-    model = OllamaLLM(
-        model=os.getenv("LOCAL_MODEL", "qwen3.5:4b"),
-        base_url="http://127.0.0.1:11434",
-        temperature=float(os.getenv("TEMPERATURE", "0.7")),
-    )
-    logger.debug(f"4. LLM model initialized: {os.getenv('LOCAL_MODEL', 'qwen3.5:4b')}")
+    if provider == "openai":
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if not openai_api_key:
+            raise ValueError("OPENAI_API_KEY is not set in the environment.")
+        model = ChatOpenAI(
+            model=os.getenv("OPENAI_MODEL", "gpt-5-nano"),
+            api_key=openai_api_key,
+            temperature=float(os.getenv("TEMPERATURE", "0.1")),
+        )
+        logger.debug(f"4. LLM model initialized (OpenAI): {os.getenv('OPENAI_MODEL', 'gpt-5-nano')}")
+    else:
+        model = OllamaLLM(
+            model=os.getenv("LOCAL_MODEL", "qwen3.5:4b"),
+            base_url="http://127.0.0.1:11434",
+            temperature=float(os.getenv("TEMPERATURE", "0.7")),
+        )
+        logger.debug(f"4. LLM model initialized (Ollama): {os.getenv('LOCAL_MODEL', 'qwen3.5:4b')}")
 
     # Split at ~5000 characters to Improve quality.
 

@@ -2,7 +2,7 @@ import os
 from run_generation_eval import run_full_evaluation_with_config
 
 
-def test_run_full_evaluation(test_models: list, test_text_dict: dict, style="essay", 
+def test_run_full_evaluation(test_models: list, test_text_dict: dict, provider="ollama", style="essay", 
                              result_file_name="eval_generation_essay_results.jsonl"):
     """Test the full evaluation process for grammar, style, and clarity."""
     
@@ -22,7 +22,7 @@ def test_run_full_evaluation(test_models: list, test_text_dict: dict, style="ess
             
             try:
                 # run_full_evaluation(value, style=style)
-                run_full_evaluation_with_config(value, style=style, llm_model=model, 
+                run_full_evaluation_with_config(value, provider=provider, style=style, llm_model=model, 
                                                 result_file_name=result_file_name, file_name=key)
             except Exception as e:
                 print(f"ERROR with {model} on {key}: {e}")
@@ -63,7 +63,6 @@ if __name__ == "__main__":
 
     """This will run the full evaluation process for multiple models and multiple texts in a batch manner and add them to the eval_result.json"""
     test_models = [
-        # "qwen3.5:4b", # Gets stuck loading forever. Too small to work with our context
         # "llama3.1",
         # "mistral", # 7b
         # "ministral-3:8b",
@@ -73,23 +72,33 @@ if __name__ == "__main__":
         "qwen3:8b",
         # "qwen3:14b",
         # "mistral-small3.2:24b",
-        # "qwen3.5:9b",  # Run everything over this one as well...
-        # "qwen3.6:27b", # Ridicoulous example
+        # "qwen3.5:9b",  
+        # "qwen3.6:27b", 
+        # "qwen3.5:4b", # Gets stuck loading forever. Too small to work with our context
         # kimi 
         # grok
     ] 
 
     # Remove some items for testing
     # essays.pop("Article_C2_Profishency_Response_3.txt")
-    # essays.pop("Wider_Audience_A1.txt")
+
+    #####
+    # The Following 3 Runs need to be strictly called by hand. 
+    # They are batch calls, and will make countless LLM calls, so they run for ages.
+    # Uncomment only one at a time
+    #####
     
-    
-    
-    #essays = get_essay_dict()
-    #result_file_name = "eval_generation_essay_results.jsonl"
-    #test_run_full_evaluation(test_models, essays, style="essay", result_file_name=result_file_name)
+    # essays = get_essay_dict()
+    # result_file_name = "eval_generation_essay_results.jsonl"
+    # test_run_full_evaluation(test_models, essays, style="essay", result_file_name=result_file_name)
     
     fiction = get_fiction_dict()
     result_file_name = "eval_generation_fiction_results.jsonl"
-    test_run_full_evaluation(test_models, fiction, style="fiction", result_file_name=result_file_name)
-        
+    test_run_full_evaluation(test_models, fiction, provider="ollama", style="fiction", result_file_name=result_file_name)
+    
+    # OpenAI Comparison
+    # test_models = ["gpt-5-nano"]    # Model is taken from .env File. This is only the name in the results .json
+    # test_run_full_evaluation(test_models, essays, provider="openai", style="essay", result_file_name=result_file_name)
+    # test_run_full_evaluation(test_models, fiction, provider="openai", style="fiction", result_file_name=result_file_name)
+    
+    
