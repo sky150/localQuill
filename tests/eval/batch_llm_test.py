@@ -69,7 +69,7 @@ if __name__ == "__main__":
         # "minstral-nemo:12b",
         # "qwen2.5:7b",
         # "qwen2.5:14b",
-        "qwen3:8b",
+        "qwen3:8b"
         # "qwen3:14b",
         # "mistral-small3.2:24b",
         # "qwen3.5:9b",  
@@ -94,10 +94,12 @@ if __name__ == "__main__":
     
     fiction = get_fiction_dict()
     result_file_name = "eval_generation_fiction_results.jsonl"
-    test_run_full_evaluation(test_models, fiction, provider="ollama", style="fiction", result_file_name=result_file_name)
+    test_run_full_evaluation(test_models, fiction, style="fiction", result_file_name=result_file_name)
+    
+    
     
     # OpenAI Comparison
-    # test_models = ["gpt-5-nano"]    # Model is taken from .env File. This is only the name in the results .json
+    # test_models = ["gpt-5-nano"]    # Model overrides what stands in the .env file
     # test_run_full_evaluation(test_models, essays, provider="openai", style="essay", result_file_name=result_file_name)
     # test_run_full_evaluation(test_models, fiction, provider="openai", style="fiction", result_file_name=result_file_name)
     

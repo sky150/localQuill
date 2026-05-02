@@ -201,7 +201,7 @@ def format_feedback(sections: dict) -> str:
     )
 
 
-def query_rag(user_text: str, style: str = "essay", return_dict: bool = False, provider: str = "ollama") -> str:
+def query_rag(user_text: str, style: str = "essay", return_dict: bool = False, provider: str = "ollama", model_name: str = None) -> str:
     """Main function to handle the RAG process for writing feedback."""
 
     user_text = text_normalization(user_text)
@@ -247,19 +247,21 @@ def query_rag(user_text: str, style: str = "essay", return_dict: bool = False, p
         openai_api_key = os.getenv("OPENAI_API_KEY")
         if not openai_api_key:
             raise ValueError("OPENAI_API_KEY is not set in the environment.")
+        resolved_model = model_name or os.getenv("OPENAI_MODEL", "gpt-5-nano")
         model = ChatOpenAI(
-            model=os.getenv("OPENAI_MODEL", "gpt-5-nano"),
+            model=resolved_model,
             api_key=openai_api_key,
             temperature=float(os.getenv("TEMPERATURE", "0.1")),
         )
-        logger.debug(f"4. LLM model initialized (OpenAI): {os.getenv('OPENAI_MODEL', 'gpt-5-nano')}")
+        logger.debug(f"4. LLM model initialized (OpenAI): {resolved_model}")
     else:
+        resolved_model = model_name or os.getenv("LOCAL_MODEL", "llama3.1")
         model = OllamaLLM(
-            model=os.getenv("LOCAL_MODEL", "qwen3.5:4b"),
+            model=resolved_model,
             base_url="http://127.0.0.1:11434",
-            temperature=float(os.getenv("TEMPERATURE", "0.7")),
+            temperature=float(os.getenv("TEMPERATURE", "0.1")),
         )
-        logger.debug(f"4. LLM model initialized (Ollama): {os.getenv('LOCAL_MODEL', 'qwen3.5:4b')}")
+        logger.debug(f"4. LLM model initialized (Ollama): {resolved_model}")
 
     # Split at ~5000 characters to Improve quality.
 
