@@ -64,20 +64,22 @@ if __name__ == "__main__":
     """This will run the full evaluation process for multiple models and multiple texts in a batch manner and add them to the eval_result.json"""
     test_models = [
         # "llama3.1",
-        # "mistral", # 7b
+        # "mistral", # 7b 
         # "ministral-3:8b",
-        # "minstral-nemo:12b",
+        # "mistral-nemo", 
         # "qwen2.5:7b",
         # "qwen2.5:14b",
-        "qwen3:8b"
         # "qwen3:14b",
-        # "mistral-small3.2:24b",
-        # "qwen3.5:9b",  
-        # "qwen3.6:27b", 
+        # # "qwen3.5:9b",  # Too slow gets stuck for fiction
+        # # "qwen3.6:27b",  # Too slow gets stuck for fiction
         # "qwen3.5:4b", # Gets stuck loading forever. Too small to work with our context
         # kimi 
         # grok
+        # "mistral-small3.2:24b",
+        "qwen3:8b"
     ] 
+    
+    ###
 
     # Remove some items for testing
     # essays.pop("Article_C2_Profishency_Response_3.txt")
@@ -93,14 +95,16 @@ if __name__ == "__main__":
     # test_run_full_evaluation(test_models, essays, style="essay", result_file_name=result_file_name)
     
     fiction = get_fiction_dict()
+    fiction.pop("LotR_Chapter_1_2_1000.txt")    # Only the shortest is actually used. The others are overwhelmed during g-eval
+    fiction.pop("LotR_Chapter_1_3_2000.txt")
+    fiction.pop("LotR_Chapter_1_4_4000.txt")
+    fiction.pop("LotR_Chapter_1_Full.txt")
     result_file_name = "eval_generation_fiction_results.jsonl"
     test_run_full_evaluation(test_models, fiction, style="fiction", result_file_name=result_file_name)
     
-    
-    
     # OpenAI Comparison
-    # test_models = ["gpt-5-nano"]    # Model overrides what stands in the .env file
+    #test_models = ["gpt-5-nano"]    # Model overrides what stands in the .env file
     # test_run_full_evaluation(test_models, essays, provider="openai", style="essay", result_file_name=result_file_name)
-    # test_run_full_evaluation(test_models, fiction, provider="openai", style="fiction", result_file_name=result_file_name)
+    #test_run_full_evaluation(test_models, fiction, provider="openai", style="fiction", result_file_name=result_file_name)
     
     
