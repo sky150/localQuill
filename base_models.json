@@ -1,0 +1,30 @@
+{
+    "essay":{
+        "grammar":{
+            "model": "qwen3:8b",
+            "temperature": "0.0"
+        },
+        "style":{
+            "model": "qwen3.5:9b",
+            "temperature": "0.1"
+        },
+        "clarity":{
+            "model": "ministral-3:8b",
+            "temperature": "0.0"
+        }
+    },
+        "fiction":{
+        "grammar":{
+            "model": "qwen3:8b",
+            "temperature": "0.0"
+        },
+        "style":{
+            "model": "qwen3.5:9b",
+            "temperature": "0.1"
+        },
+        "clarity":{
+            "model": "ministral-3:8b",
+            "temperature": "0.0"
+        }
+    }
+}
