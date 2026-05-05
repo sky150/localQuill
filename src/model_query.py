@@ -173,9 +173,9 @@ def get_model(provider: str, model_name: str):
         
     return model
 
-def get_model_base(style: str, section: str):
+def get_model_base(style: str, section: str, json_name: str = "base_models.json"):
     """Load model and temperature from base_models.json for the given style and section."""
-    base_models_path = os.path.join(os.path.dirname(__file__), "..", "base_models.json")
+    base_models_path = os.path.join(os.path.dirname(__file__), "..", json_name)
     with open(base_models_path, "r") as f:
         base_models = json.load(f)
 
@@ -196,16 +196,20 @@ def llm_call(provider, model_name, style, user_text_chunks, style_context, conte
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     
     use_base = os.getenv("USE_BASE_MODEL", "false").strip().lower() == "true"
+    use_base_27b = os.getenv("USE_BASE_MODEL_27b", "false").strip().lower() == "true"
     logger.debug(f"USE_BASE_MODEL={use_base}")
+    logger.debug(f"USE_BASE_MODEL_27b={use_base_27b}")
 
     for i, user_text_chunk in enumerate(user_text_chunks):
         logger.debug(f"5.{i+1} Invoking LLM with chunk {i+1}/{len(user_text_chunks)}. Chunklength: {len(user_text_chunk.split())} words.")
-
+    
         for section, focus in SUB_PROMPTS.items():
 
             # Base setting chooses the best model from evaluation. Values loaded from base_models.json
             if use_base:
                 model = get_model_base(style, section)
+            elif use_base_27b:
+                model = get_model_base("base_27b", section, json_name="base_models_27b.json")
             else:
                 model = get_model(provider, model_name)
             
