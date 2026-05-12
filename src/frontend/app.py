@@ -30,6 +30,6 @@ async def on_start():
 
 @cl.on_message
 async def main(message: cl.Message):
-    style = cl.user_session.get("style", "essay")
+    style = cl.user_session.get("style", "essay") # style seems to always be essay?
     response = await asyncio.to_thread(query_rag, message.content, style=style)
     await cl.Message(content=response).send()

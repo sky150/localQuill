@@ -3,7 +3,11 @@ import json
 import time
 from dotenv import load_dotenv
 import src.evaluation.metrics_retrieval as metrics_retrieval
-from src.model_query import get_db, text_normalization, similarity_search
+from src.model_query import (
+    get_db,
+    text_normalization,
+    similarity_search_eval,
+)
 from eval_config import EVAL_CONFIG, get_eval_results, save_eval_record
 
 
@@ -34,45 +38,77 @@ def retrieval_evaluation():
 
         normalized_query = text_normalization(query)
 
-        results = similarity_search(
+        results = similarity_search_eval(
             db=eval_db,
-            user_text=normalized_query,
-            collection_name=EVAL_CONFIG["collection_name"],
+            query=normalized_query,
             top_k=EVAL_CONFIG["top_k"],
         )
 
         if isinstance(results, str):
-            retrieved_chunks = []
-        else:
-            retrieved_chunks = [doc.page_content for doc, score in results]
-
-        if not retrieved_chunks:
             print("No chunks retrieved for this query.")
             print("-" * 36)
             continue
 
-        score, reason = metrics_retrieval.evaluate_retrieval(query, retrieved_chunks)
+        # auskommentiert weil wir nur retrieval testen wollen anstatt alle kategorien
+        # focus_scores = {}
+        # for focus, focus_results in results.items():
+        # if not focus_results:
+        #     continue
 
-        print(f"Relevancy Score: {score}")
-        print(f"Reason: {reason}")
+        results = similarity_search_eval(
+            eval_db, normalized_query, top_k=EVAL_CONFIG["top_k"]
+        )
+        retrieved_chunks = [doc.page_content for doc, _ in results]
+        retrieved_metadata = [doc.metadata for doc, _ in results]
+
+        expected_concept = tc.get("expected_concept", "")
+        expected_doc = tc.get("expected_document", "N/A")
+
+        precision, precision_reason, recall, recall_reason = (
+            metrics_retrieval.evaluate_retrieval(
+                query, retrieved_chunks, expected_concept
+            )
+        )
+        hit = metrics_retrieval.evaluate_document_hit(expected_doc, retrieved_metadata)
+
+        print(f" Precision@K: {precision:.2f} | Recall@K: {recall:.2f} | Hit: {hit}")
+        print(f"    P: {precision_reason}")
+        print(f"    R: {recall_reason}")
+
         print("-" * 50)
-
         results_log.append(
             {
                 "query": query,
-                "expected_document": tc.get("expected_document", "N/A"),
-                "score": score,
-                "reason": reason,
+                "expected_document": expected_doc,
+                "expected_concept": expected_concept,
+                "precision": precision,
+                "precision_reason": precision_reason,
+                "recall": recall,
+                "recall_reason": recall_reason,
+                "document_hit": hit,
             }
         )
 
     duration = time.time() - run_start
 
     if results_log:
-        average_score = sum(r["score"] for r in results_log) / len(results_log)
-        print(f"\nAverage relevancy score: {average_score:.2f}")
+        average_precision = sum(r["precision"] for r in results_log) / len(results_log)
+        average_recall = sum(r["recall"] for r in results_log) / len(results_log)
+        total_hits = sum(1 for r in results_log if r["document_hit"])
+        average_hit_rate = total_hits / len(results_log)
 
-        record = get_eval_results("retrieval", duration, average_score, results_log)
+        print(f"\nAverage Precision@K: {average_precision:.2f}")
+        print(f"Average Recall@K:    {average_recall:.2f}")
+        print(f"Average Hit Rate:    {average_hit_rate:.2f}")
+
+        record = get_eval_results(
+            "retrieval",
+            duration,
+            average_precision,
+            average_recall,
+            results_log,
+            average_hit_rate,
+        )
         save_eval_record(record)
 
 

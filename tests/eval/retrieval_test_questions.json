@@ -1,32 +1,22 @@
 [
   {
-    "query": "How is the organisation of an essay graded in the C2 exam?",
-    "expected_document": "Essay_c2_writing_masterclass_digital_sample.pdf",
-    "expected_concept": "This criterion focuses on how your ideas are organised into paragraphs, if these are needed. It includes the use of discourse markers that act to make the text cohesive."
+    "query": "When you read the assignment prompt, what should you do?",
+    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
+    "expected_concept": "You should look for action verbs, consider the broader goals of the assignment, look for instructions about the scope, consider your audience, and ask questions if you are unsure."
   },
   {
-    "query": "What does communicative achievement mean in the C2 writing assessment?",
-    "expected_document": "Essay_c2_writing_masterclass_digital_sample.pdf",
-    "expected_concept": "This criterion focuses on how well you communicate with the reader. This includes whether your writing is suitable for the task you are writing, and it also involves register."
+    "query": "What are the rules for replacing words and phrases to improve writing?",
+    "expected_document": "Clear and Concise Writing.pdf",
+    "expected_concept": "Delete weak intensifiers, redundant words, and unnecessary 'to be' verbs. Change negative constructions to positive, follow 'this/that/these/those' with a noun, and use specific nouns and phrases."
   },
   {
-    "query": "How long should my answer be for Part 1 of the C2 Proficiency Writing paper?",
-    "expected_document": "Essay_c2_writing_masterclass_digital_sample.pdf",
-    "expected_concept": "Part 1: answer should be 240-280 words long."
+    "query": "What are the core components required to develop a strong argument?",
+    "expected_document": "Argumentation Guide.pdf",
+    "expected_concept": "Developing a strong argument requires taking a clearly stated position on a debatable issue, introducing the issue reasonably to readers, and developing reasons and evidence for your position."
   },
   {
-    "query": "What are the characteristics of a B2 level candidate response when writing an email?",
-    "expected_document": "Email_Wider-Audience_cambridge_sample_responses_A1-C1.pdf",
-    "expected_concept": "The CEFR states that at B2 level, writers can write letters/emails which convey degrees of emotion and highlight the personal significance of events and experiences, and comment on the correspondent's news and views."
-  },
-  {
-    "query": "What is the primary issue with the organisation of the text in the A1 candidate email response?",
-    "expected_document": "Email_Wider-Audience_cambridge_sample_responses_A1-C1.pdf",
-    "expected_concept": "There is limited punctuation; this is the main issue with the organisation of the text, and, as a result, the text is difficult to follow."
-  },
-  {
-    "query": "How many marks is the Content assessment criterion worth?",
-    "expected_document": "Essay_c2_writing_masterclass_digital_sample.pdf",
-    "expected_concept": "Max. 5 marks"
+    "query": "What is the meaning of the word pristine?",
+    "expected_document": "C2-Proficiency-CPE-Vocabulary-List-PDF.pdf",
+    "expected_concept": "In its original condition; unspoiled."
   }
 ]

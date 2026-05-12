@@ -4,16 +4,15 @@ from src.model_query import query_rag
 from eval_config import EVAL_CONFIG, get_eval_results, save_eval_record
 
 
-def run_full_evaluation(user_prompt, style="essay"):
+def run_full_evaluation(user_prompt, provider="ollama", style="essay", llm_model: str = None):
     """Run the full evaluation process for grammar, style, and clarity."""
-<<<<<<<< HEAD:tests/eval/test_g_eval.py
     feedback = query_rag(
         user_prompt,
-        style=style, 
-        return_dict=True
+        style=style,
+        return_dict=True,
+        provider=provider,
+        model_name=llm_model,
     )
-========
->>>>>>>> origin/naty-dev:tests/eval/run_generation_eval.py
 
     print(f"=== Starting Generation Evaluation ===")
     print(f"LLM Model: {EVAL_CONFIG['llm_model']}")
@@ -22,29 +21,20 @@ def run_full_evaluation(user_prompt, style="essay"):
     run_start = time.time()
     results_log = []
 
-    feedback = query_rag(user_prompt, style="essay", return_dict=True)  # fantasy
-
     grammar_feedback = "\n".join(feedback["grammar"])
     style_feedback = "\n".join(feedback["style"])
     clarity_feedback = "\n".join(feedback["clarity"])
 
     print("\n--- Running Grammar Evaluation ---")
-
-    g_score, g_reason = metrics_generation.evaluate_grammar(
-        user_prompt, grammar_feedback
-    )
+    g_score, g_reason = metrics_generation.evaluate_grammar(user_prompt, grammar_feedback)
     results_log.append({"metric": "grammar", "score": g_score, "reason": g_reason})
 
     print("\n--- Running Style Evaluation ---")
-
     s_score, s_reason = metrics_generation.evaluate_style(user_prompt, style_feedback)
     results_log.append({"metric": "style", "score": s_score, "reason": s_reason})
 
     print("\n--- Running Clarity Evaluation ---")
-
-    c_score, c_reason = metrics_generation.evaluate_clarity(
-        user_prompt, clarity_feedback
-    )
+    c_score, c_reason = metrics_generation.evaluate_clarity(user_prompt, clarity_feedback)
     results_log.append({"metric": "clarity", "score": c_score, "reason": c_reason})
 
     duration = time.time() - run_start
@@ -54,6 +44,32 @@ def run_full_evaluation(user_prompt, style="essay"):
 
     record = get_eval_results("generation", duration, average_score, results_log)
     save_eval_record(record)
+
+def run_full_evaluation_with_config(user_prompt, provider="ollama", style="essay",
+    llm_model: str = None, result_file_name: str = None, file_name: str = None,
+    temperature: float = None, top_k: int = None, chunk_size: int = None, chunk_overlap: int = None):
+    """Run evaluation with optional config overrides before executing."""
+    update_eval_config(llm_model=llm_model,result_file_name=result_file_name,file_name=file_name,
+        temperature=temperature,top_k=top_k,chunk_size=chunk_size,chunk_overlap=chunk_overlap)
+    run_full_evaluation(user_prompt, provider=provider, style=style, llm_model=llm_model)
+
+def update_eval_config(llm_model: str = None,result_file_name: str = None,
+    file_name: str = None,temperature: float = None,top_k: int = None,
+    chunk_size: int = None,chunk_overlap: int = None):
+    if llm_model is not None:
+        EVAL_CONFIG["llm_model"] = llm_model
+    if result_file_name is not None:
+        EVAL_CONFIG["result_file_name"] = result_file_name
+    if file_name is not None:
+        EVAL_CONFIG["file_name"] = file_name
+    if temperature is not None:
+        EVAL_CONFIG["temperature"] = temperature
+    if top_k is not None:
+        EVAL_CONFIG["top_k"] = top_k
+    if chunk_size is not None:
+        EVAL_CONFIG["chunk_size"] = chunk_size
+    if chunk_overlap is not None:
+        EVAL_CONFIG["chunk_overlap"] = chunk_overlap
 
 
 if __name__ == "__main__":
@@ -88,8 +104,5 @@ to the vlogger and feel any tourism company would
 benefit from the clear delight behind each experience in
 promoting their company."""
 
-<<<<<<<< HEAD:tests/eval/test_g_eval.py
     run_full_evaluation(test_user_prompt, style)
-========
-    run_full_evaluation(test_user_prompt)
->>>>>>>> origin/naty-dev:tests/eval/run_generation_eval.py
+
