@@ -9,6 +9,7 @@ import os
 import re
 import logging
 import time
+from src.middleware.content_filter import ContentFilterMiddleware
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -291,6 +292,14 @@ def query_rag(user_text: str, style: str = "essay", return_dict: bool = False, p
             "Please split it into smaller sections.")
 
     logger.debug("2. Input validation passed. Proceeding with RAG process.")
+    # Input guardrails: detect prompt-injection or suspicious inputs before retrieval
+    use_guardrails = os.getenv("USE_GUARDRAILS", "true").strip().lower() != "false"
+    if use_guardrails:
+        cf = ContentFilterMiddleware(logger=logger)
+        ok = cf.check_text(user_text)
+        if not ok:
+            logger.warning("Input blocked by content filter (deterministic check).")
+            return "Your input was rejected because it appears to contain unsafe instructions. Please reword and try again."
     try:
         db = get_db(CHROMA_PATH, collection_name)
     except (FileNotFoundError, ValueError) as e:
