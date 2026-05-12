@@ -118,6 +118,20 @@ def text_normalization(user_text: str):
     return text.strip()
 
 
+def similarity_search_eval(db, query: str, top_k: int = 5):
+    """
+    Plain similarity search for retrieval evaluation.
+    Just tests if the embedding model retrieves the right chunks.
+    """
+    results = db.similarity_search_with_score(query, k=top_k)
+
+    logger.info(f"++ Eval similarity search ++")
+    for doc, score in results:
+        logger.info(f"Score: {score:.3f} | Source: {doc.metadata.get('source', '?')}")
+
+    return results  # list of (doc, score)
+
+
 def similarity_search(db, user_text, collection_name: str, top_k=5):
     """Perform a similarity search on the ChromaDB collection and return the top_k results."""
 
@@ -126,7 +140,9 @@ def similarity_search(db, user_text, collection_name: str, top_k=5):
     for focus, focus_query in SUB_PROMPT_QUERIES.items():
         # combine focus with small part of user text
         combined_query = f"{focus_query}\n\n{user_text[:2000]}"
-        results = db.similarity_search_with_score(combined_query, k=top_k)
+        results = db.similarity_search_with_score(
+            combined_query, k=top_k
+        )  # hybrid search ?
         # results = db.similarity_search_with_score(user_text[:10000], k=top_k)
 
         logger.info(

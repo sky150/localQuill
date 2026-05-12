@@ -162,7 +162,7 @@ $env:PYTHONPATH="."; uv run python tests/test_rag.py
 ### Generate seperate DB for evaluation
 
 ```sh
-COLLECTION_NAME=essay DATA_PATH=./data/eval CHROMA_PATH=./tests/chroma_eval uv run -m src.vector_db.generate_chroma
+COLLECTION_NAME=essay DATA_PATH=./data/styles/essay CHROMA_PATH=./tests/chroma_eval uv run -m src.vector_db.generate_chroma
 ```
 
 ### Run Tests

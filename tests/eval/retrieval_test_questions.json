@@ -1,27 +1,22 @@
 [
   {
-    "query": "What makes a thesis arguable rather than descriptive?",
+    "query": "When you read the assignment prompt, what should you do?",
     "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
-    "expected_concept": "A strong thesis is arguable, which means a thoughtful reader could disagree with it and therefore needs your careful analysis of the evidence to understand how you arrived at this claim."
+    "expected_concept": "You should look for action verbs, consider the broader goals of the assignment, look for instructions about the scope, consider your audience, and ask questions if you are unsure."
   },
   {
-    "query": "What should an essay introduction contain?",
-    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
-    "expected_concept": "A strong introduction should contain orienting information, an explanation of what is at stake in your essay, and your thesis."
+    "query": "What are the rules for replacing words and phrases to improve writing?",
+    "expected_document": "Clear and Concise Writing.pdf",
+    "expected_concept": "Delete weak intensifiers, redundant words, and unnecessary 'to be' verbs. Change negative constructions to positive, follow 'this/that/these/those' with a noun, and use specific nouns and phrases."
   },
   {
-    "query": "What is the difference between an analytical and a normative claim?",
-    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
-    "expected_concept": "Analytical claims are based on interpretation of facts, data, or sources. Normative claims are claims of value or evaluation about how things should be rather than how they are."
+    "query": "What are the core components required to develop a strong argument?",
+    "expected_document": "Argumentation Guide.pdf",
+    "expected_concept": "Developing a strong argument requires taking a clearly stated position on a debatable issue, introducing the issue reasonably to readers, and developing reasons and evidence for your position."
   },
   {
-    "query": "What are common mistakes to avoid when writing an introduction?",
-    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
-    "expected_concept": "Avoid very general opening sentences, funnel introductions, dictionary definitions, and too much detail that a reader could better understand later."
-  },
-  {
-    "query": "How should the scope of a thesis relate to the essay?",
-    "expected_document": "Harvard_Strategies for Essay Writing--Complete.pdf",
-    "expected_concept": "A thesis should be the right scope for the essay — not too narrow to explore in depth, and not too broad to support with available evidence."
+    "query": "What is the meaning of the word pristine?",
+    "expected_document": "C2-Proficiency-CPE-Vocabulary-List-PDF.pdf",
+    "expected_concept": "In its original condition; unspoiled."
   }
 ]

@@ -19,12 +19,17 @@ EVAL_CONFIG = {
     "collection_name": os.getenv("COLLECTION_NAME", "essay"),
     "results_path": "reports",
     "result_file_name": "eval_retrieval_results.jsonl",
-    "file_name": "Style-Guide",
+    "file_name": "All-Essay-Docs",
 }
 
 
 def get_eval_results(
-    eval_type: str, duration: float, average_score: float, per_test_results: list
+    eval_type: str,
+    duration: float,
+    average_precision: float,
+    average_recall: float,
+    per_test_results: list,
+    average_hit_rate: float,
 ):
     ram_gb = round(psutil.virtual_memory().total / 1e9, 1)
 
@@ -42,7 +47,9 @@ def get_eval_results(
         "device_name": platform.node(),
         "ram_gb": ram_gb,
         "duration_seconds": round(duration, 2),
-        "average_score": round(average_score, 4),
+        "average_precision": round(average_precision, 4),
+        "average_recall": round(average_recall, 4),
+        "average_hit_rate": round(average_hit_rate, 4),
         "per_test": per_test_results,
     }
 
