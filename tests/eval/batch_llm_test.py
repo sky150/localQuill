@@ -74,36 +74,33 @@ if __name__ == "__main__":
         # "qwen2.5:7b",
         # "qwen3:8b",
         # "qwen3.5:9b",  # Too slow gets stuck for fiction, sometimes doesn't answer. Gets errors with empty response. Remove from final models
-        "qwen2.5:14b",
-        "qwen3:14b",
-        # "mistral-small3.2", # 24b - Too big for pc - temp 0.1 missing
-    #     "qwen3.6:27b",  # Too slow gets stuck for fiction       
+        # "qwen2.5:14b",
+        # "qwen3:14b",
+        # "mistral-small3.2", # 24b - Too big for pc
+        # "qwen3.6:27b",  # Too slow gets stuck for fiction       
     ] 
     essays = get_essay_dict()
     result_file_name = "eval_generation_essay_results.jsonl"
     test_run_full_evaluation(test_models, essays, style="essay", result_file_name=result_file_name)
     
-    
-    # Temperature 0.0 ran on laptop. Pc 0.1 
 
-
-    test_models = [
+    # test_models = [
     #     "qwen3:8b",
     #     "llama3.1:8b",
     #     "mistral:7b", # 7b 
     #     "ministral-3:8b",
     #     "mistral-nemo:12b", 
     #     "qwen2.5:7b",
-        "qwen2.5:14b",    #both temp are missing
-        "qwen3:14b",        
-    ] 
-    fiction = get_fiction_dict()
-    fiction.pop("LotR_Chapter_1_2_1000.txt")    # Only the shortest is actually used. The others are overwhelmed during g-eval
-    fiction.pop("LotR_Chapter_1_3_2000.txt")
-    fiction.pop("LotR_Chapter_1_4_4000.txt")
-    fiction.pop("LotR_Chapter_1_Full.txt")
-    result_file_name = "eval_generation_fiction_results.jsonl"
-    test_run_full_evaluation(test_models, fiction, style="fiction", result_file_name=result_file_name)
+    #     "qwen2.5:14b",    #both temp are missing
+    #     "qwen3:14b",        
+    # ] 
+    # fiction = get_fiction_dict()
+    # fiction.pop("LotR_Chapter_1_2_1000.txt")    # Only the shortest is actually used. The others are overwhelmed during g-eval
+    # fiction.pop("LotR_Chapter_1_3_2000.txt")
+    # fiction.pop("LotR_Chapter_1_4_4000.txt")
+    # fiction.pop("LotR_Chapter_1_Full.txt")
+    # result_file_name = "eval_generation_fiction_results.jsonl"
+    # test_run_full_evaluation(test_models, fiction, style="fiction", result_file_name=result_file_name)
     
     # OpenAI Comparison
     #test_models = ["gpt-5-nano"]    # Model overrides what stands in the .env file
@@ -111,3 +108,8 @@ if __name__ == "__main__":
     #test_run_full_evaluation(test_models, fiction, provider="openai", style="fiction", result_file_name=result_file_name)
     
     
+    
+    ###
+    # Report
+    # The qwen3:9b model. Will be cut out. Even if it performs better. It is not consitent and prone to get stuck.
+    ###
