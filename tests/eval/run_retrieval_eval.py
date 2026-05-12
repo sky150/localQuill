@@ -6,7 +6,6 @@ import src.evaluation.metrics_retrieval as metrics_retrieval
 from src.model_query import (
     get_db,
     text_normalization,
-    similarity_search,
     similarity_search_eval,
 )
 from eval_config import EVAL_CONFIG, get_eval_results, save_eval_record
