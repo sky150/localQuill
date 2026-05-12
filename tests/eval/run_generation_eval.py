@@ -4,12 +4,14 @@ from src.model_query import query_rag
 from eval_config import EVAL_CONFIG, get_eval_results, save_eval_record
 
 
-def run_full_evaluation(user_prompt, style="essay"):
+def run_full_evaluation(user_prompt, provider="ollama", style="essay", llm_model: str = None):
     """Run the full evaluation process for grammar, style, and clarity."""
     feedback = query_rag(
         user_prompt,
-        style=style, 
-        return_dict=True
+        style=style,
+        return_dict=True,
+        provider=provider,
+        model_name=llm_model,
     )
 
     print(f"=== Starting Generation Evaluation ===")
@@ -43,13 +45,13 @@ def run_full_evaluation(user_prompt, style="essay"):
     record = get_eval_results("generation", duration, average_score, results_log)
     save_eval_record(record)
 
-def run_full_evaluation_with_config(user_prompt, style="essay",
+def run_full_evaluation_with_config(user_prompt, provider="ollama", style="essay",
     llm_model: str = None, result_file_name: str = None, file_name: str = None,
     temperature: float = None, top_k: int = None, chunk_size: int = None, chunk_overlap: int = None):
     """Run evaluation with optional config overrides before executing."""
     update_eval_config(llm_model=llm_model,result_file_name=result_file_name,file_name=file_name,
         temperature=temperature,top_k=top_k,chunk_size=chunk_size,chunk_overlap=chunk_overlap)
-    run_full_evaluation(user_prompt, style=style)
+    run_full_evaluation(user_prompt, provider=provider, style=style, llm_model=llm_model)
 
 def update_eval_config(llm_model: str = None,result_file_name: str = None,
     file_name: str = None,temperature: float = None,top_k: int = None,
