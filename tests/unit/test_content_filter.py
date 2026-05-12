@@ -6,7 +6,7 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from src.middleware.content_filter import ContentFilterMiddleware
+from src.guardrails.content_filter import ContentFilterMiddleware
 
 
 logger = logging.getLogger("test_logger")

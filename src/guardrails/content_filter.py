@@ -15,7 +15,7 @@ class ContentFilterMiddleware(AgentMiddleware):
             r"disregard.*(previous|above).*(instructions|context|prompts)",
             r"forget.*?\b(previous|above)\b",
             r"override.*system instructions",
-            r"follow.*these instructions",
+            r"follow.*instructions",
             r"you are now.*?\bassistant\b",
             r"disobey",
             r"bypass.*security|bypass the",

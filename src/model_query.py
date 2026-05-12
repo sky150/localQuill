@@ -9,7 +9,7 @@ import os
 import re
 import logging
 import time
-from src.middleware.content_filter import ContentFilterMiddleware
+from src.guardrails.content_filter import ContentFilterMiddleware
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
