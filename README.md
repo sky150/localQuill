@@ -119,6 +119,8 @@ uv run -m src.vector_db.generate_chroma
 
 # Generate fiction database
 COLLECTION_NAME=fiction DATA_PATH=./data/styles/fiction uv run -m src.vector_db.generate_chroma
+# Windows
+$env:COLLECTION_NAME="fiction"; $env:DATA_PATH="./data/styles/fiction"; uv run -m src.vector_db.generate_chroma
 
 # Reset all databases (deletes and regenerates)
 uv run -m src.vector_db.generate_chroma --reset
@@ -131,9 +133,13 @@ uv run -m src.vector_db.generate_chroma --reset
 ```sh
 # Test the RAG pipeline
 PYTHONPATH=. uv run python tests/unit/test_rag.py
+# Windows
+$env:PYTHONPATH="."; uv run python tests/unit/test_rag.py
 
 # Run content filter tests
 PYTHONPATH=. uv run python tests/unit/test_content_filter.py
+# Windows
+$env:PYTHONPATH="."; uv run python tests/unit/test_content_filter.py
 ```
 
 ## Configuration
@@ -182,6 +188,19 @@ PYTHONPATH=. uv run python tests/eval/run_generation_eval.py
 
 # Run batch LLM test
 PYTHONPATH=. uv run python tests/eval/batch_llm_test.py
+
+# Windows
+$env:COLLECTION_NAME="essay"; $env:DATA_PATH=."/data/styles/essay"; CHROMA_PATH=./tests/chroma_eval \
+  uv run -m src.vector_db.generate_chroma
+
+# Run retrieval evaluation (test embedding models)
+$env:PYTHONPATH="."; uv run python tests/eval/run_retrieval_eval.py
+
+# Run generation evaluation (test LLM models)
+$env:PYTHONPATH="."; uv run python tests/eval/run_generation_eval.py
+
+# Run batch LLM test
+$env:PYTHONPATH="."; uv run python tests/eval/batch_llm_test.py
 ```
 
 **Note**: Full evaluation takes 1-3 hours on a 32GB system. Results are saved to `./reports/`.
