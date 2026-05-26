@@ -2,7 +2,7 @@
     "essay":{
         "grammar":{
             "model": "ministral-3:8b",
-            "temperature": "0.0"
+            "temperature": "0.1"
         },
         "style":{
             "model": "ministral-3:8b",
