@@ -55,12 +55,20 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ### 2. Clone & Setup
 
 ```sh
-# Clone the repository
 git clone https://github.com/sky150/loaclQuill
 cd loaclQuill
 
 # Sync dependencies
 uv sync
+
+# To create a new virtual environment with Python 3.12:
+uv venv --python 3.12
+
+# Activate virtual environment
+.venv\Scripts\Activate.ps1
+
+# Initiate project
+uv init
 ```
 
 ### 3. Download Ollama Models
