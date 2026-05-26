@@ -55,8 +55,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ### 2. Clone & Setup
 
 ```sh
-git clone https://github.com/sky150/loaclQuill
-cd loaclQuill
+git clone https://github.com/sky150/localQuill
+cd localQuill
 
 # Sync dependencies
 uv sync
