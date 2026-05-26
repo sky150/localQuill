@@ -153,7 +153,7 @@ All configuration is managed through the `.env` file. **Copy [.env.example](.env
 | `JUDGE_MODEL` | `llama3.1` | LLM for evaluation scoring (used by G-Eval) |
 | `TEMPERATURE` | `0.1` | 0.0 (deterministic) to 1.0 (bit more creative) |
 | `TOP_K` | `3` | Number of document chunks to retrieve |
-| `USER_TEXT_SPLIT` | `2000` | Character limit per LLM call |
+| `USER_TEXT_SPLIT` | `10'000` | Character limit per LLM call (roughly 2'000 words) |
 | `USE_BASE_MODEL` | `false` | Use per-criterion models from `base_models.json` |
 | `USE_GUARDRAILS` | `true` | Enable prompt injection detection |
 | `OPENAI_API_KEY` | (not requiered) | Your OpenAI key (used for comparison) |
